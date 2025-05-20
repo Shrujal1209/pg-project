@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI Payment - Paying Guest</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+        .card {
+            background-color: #ffffff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card h1 {
+            font-size: 26px;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        .card p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .btn {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            transform: scale(1.05);
+        }
+        .qr-code {
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .close-btn {
+            margin-top: 10px;
+            background: #ff4d4d;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .close-btn:hover {
+            background: #ff1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Paying Guest - UPI Payment</h1>
+        <p>Click the button below to view the QR code for payment.</p>
+        <button class="btn" onclick="showQRCode()">Show UPI QR Code</button>
+        <div class="qr-code" id="qrCode">
+            <p>Scan the QR code below to proceed with the payment:</p>
+            <img src="c:\Users\HP\Downloads\qr.jfif" alt="UPI QR Code">
+            <button class="close-btn" onclick="hideQRCode()">Close</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is authenticated
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                // Redirect to login page if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Get payment amount from session storage
+            const paymentAmount = sessionStorage.getItem('paymentAmount');
+            if (paymentAmount) {
+                document.querySelector('p').textContent = `Complete your payment of ₹${paymentAmount} using UPI.`;
+            }
+            
+            // Get payment data from session storage
+            const paymentDataStr = sessionStorage.getItem('paymentData');
+            if (paymentDataStr) {
+                try {
+                    const paymentData = JSON.parse(paymentDataStr);
+                    // Update payment method to UPI
+                    paymentData.paymentMethod = 'upi';
+                    // Update session storage
+                    sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
+                } catch (error) {
+                    console.error('Error parsing payment data:', error);
+                }
+            } else {
+                // Create new payment data if not exists
+                const userId = localStorage.getItem('userId');
+                const paymentData = {
+                    userId: userId,
+                    amount: paymentAmount || '10000',
+                    paymentMethod: 'upi',
+                    paymentDate: new Date().toISOString()
+                };
+                sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
+            }
+        });
+        
+        function showQRCode() {
+            document.getElementById('qrCode').style.display = 'block';
+            
+            // In a real implementation, you would generate a dynamic QR code
+            // based on the payment amount and other details
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // Show success message after 5 seconds (simulating payment)
+                const successMessage = document.createElement('div');
+                successMessage.className = 'success-message';
+                successMessage.innerHTML = `
+                    <div style="background-color: #4CAF50; color: white; padding: 15px; 
+                         border-radius: 5px; margin-top: 20px; text-align: center;">
+                        <p>Payment successful! Redirecting to confirmation page...</p>
+                    </div>
+                `;
+                document.querySelector('.qr-code').appendChild(successMessage);
+                
+                // Redirect to payment success page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'payment_success.html';
+                }, 2000);
+            }, 5000);
+        }
+        
+        function hideQRCode() {
+            document.getElementById('qrCode').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

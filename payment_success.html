@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Paying Guest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --primary-light: #8f94fb;
+            --primary-dark: #363795;
+            --secondary-color: #ff6b6b;
+            --secondary-light: #ff9e9e;
+            --secondary-dark: #c83e3e;
+            --success-color: #2ecc71;
+            --success-dark: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #f8f9fa;
+            --dark-color: #2d3436;
+            --body-bg: #f4f7fe;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+            --receipt-bg: #ffffff;
+            --receipt-border: #e6e6e6;
+            --receipt-accent: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -100px;
+            right: -50px;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            bottom: 50%;
+            left: 20%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: all var(--transition-speed);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+        }
+
+        .container:hover {
+            box-shadow: var(--card-hover-shadow);
+            transform: translateY(-5px);
+        }
+
+        .success-icon {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .success-icon::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+
+        .success-icon i {
+            font-size: 90px;
+            color: var(--success-color);
+            animation: successCheck 1s ease-in-out;
+            background: linear-gradient(135deg, var(--success-color), var(--success-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(46, 204, 113, 0.3));
+        }
+
+        @keyframes successCheck {
+            0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.2; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--dark-color);
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .receipt {
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            background-color: var(--receipt-bg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .receipt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23f0f0f0' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .receipt:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--receipt-border);
+            position: relative;
+        }
+
+        .receipt-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: -30px;
+            right: -30px;
+            height: 20px;
+            background-image: 
+                radial-gradient(circle at 10px 10px, transparent 12px, white 13px),
+                radial-gradient(circle at 10px 10px, var(--receipt-bg) 12px, transparent 13px);
+            background-size: 20px 20px;
+            background-position: 0 -10px;
+            z-index: 1;
+        }
+
+        .receipt-header h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .receipt-header p {
+            color: var(--secondary-color);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .receipt-header .receipt-logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
+        }
+
+        .receipt-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--receipt-accent);
+            position: relative;
+            z-index: 1;
+        }
+
+        .receipt-detail:last-of-type {
+            border-bottom: none;
+        }
+
+        .receipt-detail span:first-child {
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .receipt-detail span:last-child {
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 20px 0 10px;
+            border-top: 2px dashed var(--receipt-border);
+            font-weight: bold;
+            font-size: 20px;
+            position: relative;
+        }
+
+        .receipt-total::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -30px;
+            right: -30px;
+            height: 20px;
+            background-image: 
+                radial-gradient(circle at 10px 10px, transparent 12px, white 13px),
+                radial-gradient(circle at 10px 10px, var(--receipt-bg) 12px, transparent 13px);
+            background-size: 20px 20px;
+            background-position: 0 -10px;
+            transform: rotate(180deg);
+            z-index: 1;
+        }
+
+        .receipt-total span:first-child {
+            color: var(--primary-dark);
+        }
+
+        .receipt-total span:last-child {
+            color: var(--success-color);
+            font-size: 24px;
+        }
+
+        .receipt-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+            padding-top: 5px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all var(--transition-speed);
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-btn:hover {
+            color: var(--primary-dark);
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn i {
+            font-size: 28px;
+            transition: transform 0.3s ease;
+        }
+
+        .action-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .action-btn span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(78, 84, 200, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: none;
+        }
+
+        .btn-outline::before {
+            background: rgba(78, 84, 200, 0.1);
+        }
+
+        .btn-outline:hover {
+            color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            background: rgba(78, 84, 200, 0.05);
+        }
+
+        .btn i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: translateX(3px);
+        }
+
+        .btn-outline:hover i {
+            transform: translateX(3px);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: confetti 5s ease-in-out infinite;
+            z-index: -1;
+            border-radius: 2px;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .payment-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--success-color), var(--success-dark));
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+            animation: badgePulse 2s infinite;
+        }
+
+        @keyframes badgePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .stamp {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%) rotate(12deg);
+            font-size: 40px;
+            color: rgba(46, 204, 113, 0.2);
+            font-weight: 700;
+            border: 5px solid rgba(46, 204, 113, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            pointer-events: none;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 15px;
+                max-width: 100%;
+                background: white;
+            }
+            
+            .buttons, .receipt-actions, .payment-badge, .background-shapes {
+                display: none;
+            }
+
+            .receipt {
+                box-shadow: none;
+            }
+
+            .stamp {
+                display: block !important;
+                color: rgba(46, 204, 113, 0.3);
+                border-color: rgba(46, 204, 113, 0.3);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                margin: 20px;
+                padding: 25px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .receipt-actions {
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .stamp {
+                font-size: 30px;
+                right: 20px;
+            }
+
+            .payment-badge {
+                top: 15px;
+                right: 15px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="payment-badge">
+            <i class="fas fa-shield-alt"></i> Secure Payment
+        </div>
+        
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1>Payment Successful!</h1>
+        
+        <div class="receipt">
+            <div class="stamp">Paid</div>
+            
+            <div class="receipt-header">
+                <div class="receipt-logo">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h2>Payment Receipt</h2>
+                <p>PG Management Services</p>
+                <p id="receiptNumber">Receipt #: PG12345678</p>
+            </div>
+            
+            <div class="receipt-detail">
+                <span><i class="far fa-calendar-alt"></i> Date:</span>
+                <span id="receiptDate">-</span>
+            </div>
+            
+            <div class="receipt-detail">
+                <span><i class="fas fa-door-open"></i> Room Number:</span>
+                <span id="receiptRoomNumber">-</span>
+            </div>
+            
+            <div class="receipt-detail">
+                <span><i class="far fa-clock"></i> Payment Period:</span>
+                <span id="receiptPeriod">-</span>
+            </div>
+            
+            <div class="receipt-detail">
+                <span><i class="fas fa-credit-card"></i> Payment Method:</span>
+                <span id="receiptPaymentMethod">Credit Card (**** **** **** ****)</span>
+            </div>
+            
+            <div class="receipt-detail">
+                <span><i class="fas fa-fingerprint"></i> Transaction ID:</span>
+                <span id="receiptTransactionId">-</span>
+            </div>
+            
+            <div class="receipt-total">
+                <span>Total Amount:</span>
+                <span id="receiptAmount">-</span>
+            </div>
+        </div>
+        
+        <div class="receipt-actions">
+            <a href="#" class="action-btn" id="printReceiptBtn">
+                <i class="fas fa-print"></i>
+                <span>Print</span>
+            </a>
+            
+            <a href="#" class="action-btn" id="downloadReceiptBtn">
+                <i class="fas fa-download"></i>
+                <span>Download PDF</span>
+            </a>
+            
+            <a href="#" class="action-btn" id="emailReceiptBtn">
+                <i class="fas fa-envelope"></i>
+                <span>Email Receipt</span>
+            </a>
+            
+            <a href="#" class="action-btn" id="shareReceiptBtn">
+                <i class="fas fa-share-alt"></i>
+                <span>Share</span>
+            </a>
+        </div>
+        
+        <div class="buttons">
+            <a href="user dashboard.html" class="btn">
+                <i class="fas fa-home"></i>
+                <span>Go to Dashboard</span>
+            </a>
+            
+            <a href="bookings.html" class="btn btn-outline">
+                <i class="fas fa-list"></i>
+                <span>View Bookings</span>
+            </a>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Get payment data from session storage
+                const paymentDataStr = sessionStorage.getItem('paymentData');
+                const paymentAmount = sessionStorage.getItem('paymentAmount') || '10,000';
+                
+                // Generate receipt number and transaction ID
+                const receiptNumber = 'PG' + Date.now().toString().slice(-8);
+                const transactionId = 'TXN' + Math.random().toString(36).substring(2, 10).toUpperCase();
+                
+                // Default values
+                let receiptRoomNumber = '101';
+                let receiptPeriod = new Date().toLocaleString('default', { month: 'short' }) + ' ' + 
+                                   new Date().getFullYear();
+                let receiptDate = new Date().toLocaleDateString();
+                let receiptCardLast4 = '1234';
+                let paymentMethod = 'Credit Card';
+                
+                // If we have payment data from the previous step
+                if (paymentDataStr) {
+                    const paymentData = JSON.parse(paymentDataStr);
+                    
+                    // Update payment method display
+                    if (paymentData.paymentMethod === 'creditCard') {
+                        paymentMethod = 'Credit Card';
+                    } else if (paymentData.paymentMethod === 'upi') {
+                        paymentMethod = 'UPI';
+                    } else if (paymentData.paymentMethod === 'netBanking') {
+                        paymentMethod = 'Net Banking';
+                    }
+                    
+                    // Format the date
+                    if (paymentData.paymentDate) {
+                        const paymentDate = new Date(paymentData.paymentDate);
+                        receiptDate = paymentDate.toLocaleDateString();
+                    }
+                    
+                    // Try to finalize the payment with the backend
+                    try {
+                        // Check if user is authenticated
+                        const token = localStorage.getItem('authToken');
+                        if (token) {
+                            // Add transaction ID to payment data
+                            paymentData.transactionId = transactionId;
+                            paymentData.receiptNumber = receiptNumber;
+                            paymentData.status = 'completed';
+                            
+                            // Call the API to finalize payment
+                            // First check if the API utility has a finalizePayment function
+                            if (typeof api.finalizePayment === 'function') {
+                                const finalizedPayment = await api.finalizePayment(paymentData);
+                                
+                                // Process the response
+                                if (finalizedPayment) {
+                                    // Update with data from the server if available
+                                    if (finalizedPayment.roomNumber) {
+                                        receiptRoomNumber = finalizedPayment.roomNumber;
+                                    }
+                                    
+                                    if (finalizedPayment.paymentPeriod) {
+                                        receiptPeriod = finalizedPayment.paymentPeriod;
+                                    }
+                                    
+                                    if (finalizedPayment.cardLast4) {
+                                        receiptCardLast4 = finalizedPayment.cardLast4;
+                                    }
+                                }
+                                
+                                // Update with data from the server if available
+                                if (finalizedPayment.roomNumber) {
+                                    receiptRoomNumber = finalizedPayment.roomNumber;
+                                }
+                                
+                                if (finalizedPayment.paymentPeriod) {
+                                    receiptPeriod = finalizedPayment.paymentPeriod;
+                                }
+                                
+                                if (finalizedPayment.cardLast4) {
+                                    receiptCardLast4 = finalizedPayment.cardLast4;
+                                }
+                            } else {
+                                // Fallback to direct API call if the utility function is not available
+                                const response = await fetch(`${API_BASE_URL}/payments/finalize`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify(paymentData)
+                                });
+                                
+                                if (response.ok) {
+                                    const finalizedPayment = await response.json();
+                                    
+                                    // Update with data from the server if available
+                                    if (finalizedPayment.roomNumber) {
+                                        receiptRoomNumber = finalizedPayment.roomNumber;
+                                    }
+                                    
+                                    if (finalizedPayment.paymentPeriod) {
+                                        receiptPeriod = finalizedPayment.paymentPeriod;
+                                    }
+                                    
+                                    if (finalizedPayment.cardLast4) {
+                                        receiptCardLast4 = finalizedPayment.cardLast4;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (apiError) {
+                        console.error('API error when finalizing payment:', apiError);
+                        // Continue with the receipt display even if API call fails
+                    }
+                }
+                
+                // Update receipt details
+                document.getElementById('receiptNumber').textContent = 'Receipt #: ' + receiptNumber;
+                document.getElementById('receiptDate').textContent = receiptDate;
+                document.getElementById('receiptRoomNumber').textContent = receiptRoomNumber;
+                document.getElementById('receiptPeriod').textContent = receiptPeriod;
+                document.getElementById('receiptPaymentMethod').textContent = paymentMethod + 
+                    (paymentMethod === 'Credit Card' ? ' (**** **** **** ' + receiptCardLast4 + ')' : '');
+                document.getElementById('receiptTransactionId').textContent = transactionId;
+                document.getElementById('receiptAmount').textContent = '₹' + paymentAmount;
+                
+                // Show success notification
+                showSuccessNotification();
+                
+            } catch (error) {
+                console.error('Error processing payment data:', error);
+                // Display a generic message if there's an error
+                showErrorNotification('Your payment was successful, but there was an issue displaying the receipt details.');
+            }
+            
+            // Print receipt
+            document.getElementById('printReceiptBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Add a print animation
+                const btn = this;
+                btn.classList.add('printing');
+                
+                setTimeout(() => {
+                    window.print();
+                    btn.classList.remove('printing');
+                }, 300);
+            });
+            
+            // Download receipt as PDF
+            document.getElementById('downloadReceiptBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Add a download animation
+                const btn = this;
+                btn.classList.add('downloading');
+                
+                // Get the receipt element
+                const receipt = document.querySelector('.receipt');
+                
+                // Clone it to remove the stamp temporarily for PDF
+                const receiptClone = receipt.cloneNode(true);
+                const stamp = receiptClone.querySelector('.stamp');
+                if (stamp) stamp.style.display = 'none';
+                
+                // Create a temporary container
+                const tempContainer = document.createElement('div');
+                tempContainer.appendChild(receiptClone);
+                tempContainer.style.padding = '20px';
+                tempContainer.style.background = 'white';
+                
+                // Generate PDF
+                const opt = {
+                    margin: 10,
+                    filename: 'PG_Receipt_' + document.getElementById('receiptNumber').textContent.replace('Receipt #: ', '') + '.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                html2pdf().set(opt).from(tempContainer).save().then(() => {
+                    btn.classList.remove('downloading');
+                    showSuccessNotification('Receipt downloaded successfully!');
+                });
+            });
+            
+            // Email receipt (simulated)
+            document.getElementById('emailReceiptBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Add an email animation
+                const btn = this;
+                btn.classList.add('emailing');
+                
+                setTimeout(() => {
+                    showSuccessNotification('Receipt has been emailed to your registered email address.');
+                    btn.classList.remove('emailing');
+                }, 1500);
+            });
+            
+            // Share receipt (simulated)
+            document.getElementById('shareReceiptBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Check if Web Share API is supported
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'My PG Payment Receipt',
+                        text: 'I have successfully made a payment for my PG accommodation.',
+                        url: window.location.href
+                    })
+                    .then(() => showSuccessNotification('Shared successfully!'))
+                    .catch((error) => console.log('Error sharing:', error));
+                } else {
+                    // Fallback for browsers that don't support the Web Share API
+                    showShareOptions(this);
+                }
+            });
+            
+            // Add button ripple effect
+            const buttons = document.querySelectorAll('.btn, .action-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', createRippleEffect);
+            });
+            
+            // Create confetti effect
+            createConfetti();
+            
+            // Animate background shapes
+            animateBackgroundShapes();
+        });
+        
+        // Show success notification
+        function showSuccessNotification(message = 'Payment processed successfully!') {
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 4000);
+        }
+        
+        // Show error notification
+        function showErrorNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification error';
+            notification.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 4000);
+        }
+        
+        // Show share options
+        function showShareOptions(buttonElement) {
+            // Create share modal
+            const shareModal = document.createElement('div');
+            shareModal.className = 'share-modal';
+            shareModal.innerHTML = `
+                <div class="share-modal-content">
+                    <div class="share-modal-header">
+                        <h3>Share Receipt</h3>
+                        <button class="share-modal-close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="share-modal-body">
+                        <a href="#" class="share-option" data-platform="whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="#" class="share-option" data-platform="facebook">
+                            <i class="fab fa-facebook"></i>
+                            <span>Facebook</span>
+                        </a>
+                        <a href="#" class="share-option" data-platform="twitter">
+                            <i class="fab fa-twitter"></i>
+                            <span>Twitter</span>
+                        </a>
+                        <a href="#" class="share-option" data-platform="email">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email</span>
+                        </a>
+                        <a href="#" class="share-option" data-platform="copy">
+                            <i class="fas fa-copy"></i>
+                            <span>Copy Link</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(shareModal);
+            
+            // Show modal with animation
+            setTimeout(() => {
+                shareModal.classList.add('show');
+            }, 10);
+            
+            // Close modal when clicking on close button
+            shareModal.querySelector('.share-modal-close').addEventListener('click', () => {
+                shareModal.classList.remove('show');
+                setTimeout(() => {
+                    shareModal.remove();
+                }, 300);
+            });
+            
+            // Close modal when clicking outside
+            shareModal.addEventListener('click', (e) => {
+                if (e.target === shareModal) {
+                    shareModal.classList.remove('show');
+                    setTimeout(() => {
+                        shareModal.remove();
+                    }, 300);
+                }
+            });
+            
+            // Handle share option clicks
+            shareModal.querySelectorAll('.share-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const platform = option.getAttribute('data-platform');
+                    
+                    // Simulate sharing (in a real app, these would be actual share links)
+                    if (platform === 'copy') {
+                        navigator.clipboard.writeText(window.location.href)
+                            .then(() => {
+                                showSuccessNotification('Link copied to clipboard!');
+                            })
+                            .catch(err => {
+                                console.error('Could not copy text: ', err);
+                            });
+                    } else {
+                        showSuccessNotification(`Shared via ${platform}!`);
+                    }
+                    
+                    // Close modal
+                    shareModal.classList.remove('show');
+                    setTimeout(() => {
+                        shareModal.remove();
+                    }, 300);
+                });
+            });
+        }
+        
+        // Create ripple effect
+        function createRippleEffect(event) {
+            const button = event.currentTarget;
+            
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+            
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add('ripple');
+            
+            const ripple = button.querySelector('.ripple');
+            if (ripple) {
+                ripple.remove();
+            }
+            
+            button.appendChild(circle);
+            
+            setTimeout(() => {
+                circle.remove();
+            }, 600);
+        }
+        
+        // Confetti effect
+        function createConfetti() {
+            const colors = ['#4e54c8', '#8f94fb', '#ff6b6b', '#2ecc71', '#f39c12', '#9b59b6'];
+            const confettiCount = 150;
+            const confettiContainer = document.createElement('div');
+            confettiContainer.className = 'confetti-container';
+            document.body.appendChild(confettiContainer);
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random position
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -20 + 'px';
+                
+                // Random color
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                // Random shape
+                if (Math.random() > 0.6) {
+                    confetti.style.borderRadius = '50%';
+                } else if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '2px';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }
+                
+                // Random animation duration
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                
+                // Random animation delay
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                
+                confettiContainer.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 8000);
+            }
+            
+            // Remove container after all confetti are gone
+            setTimeout(() => {
+                confettiContainer.remove();
+            }, 13000);
+        }
+        
+        // Animate background shapes
+        function animateBackgroundShapes() {
+            const shapes = document.querySelectorAll('.shape');
+            
+            shapes.forEach((shape, index) => {
+                // Set initial position
+                const initialX = parseFloat(getComputedStyle(shape).left);
+                const initialY = parseFloat(getComputedStyle(shape).top);
+                
+                // Animation function
+                function animate() {
+                    const offsetX = Math.sin(Date.now() / 2000 + index) * 30;
+                    const offsetY = Math.cos(Date.now() / 2000 + index) * 30;
+                    
+                    shape.style.left = `${initialX + offsetX}px`;
+                    shape.style.top = `${initialY + offsetY}px`;
+                    
+                    requestAnimationFrame(animate);
+                }
+                
+                animate();
+            });
+        }
+    </script>
+    
+    <style>
+        /* Additional styles for new features */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .notification.error {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .notification i {
+            font-size: 20px;
+        }
+        
+        .notification.success i {
+            color: var(--success-color);
+        }
+        
+        .notification.error i {
+            color: var(--danger-color);
+        }
+        
+        .notification span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .action-btn.printing i,
+        .action-btn.downloading i,
+        .action-btn.emailing i {
+            animation: buttonAction 1.5s ease;
+        }
+        
+        @keyframes buttonAction {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .share-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .share-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .share-modal.show .share-modal-content {
+            transform: scale(1);
+        }
+        
+        .share-modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .share-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--dark-color);
+        }
+        
+        .share-modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #999;
+            cursor: pointer;
+        }
+        
+        .share-modal-body {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--dark-color);
+            padding: 15px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .share-option:hover {
+            background: #f5f5f5;
+            transform: translateY(-3px);
+        }
+        
+        .share-option i {
+            font-size: 24px;
+        }
+        
+        .share-option[data-platform="whatsapp"] i {
+            color: #25D366;
+        }
+        
+        .share-option[data-platform="facebook"] i {
+            color: #1877F2;
+        }
+        
+        .share-option[data-platform="twitter"] i {
+            color: #1DA1F2;
+        }
+        
+        .share-option[data-platform="email"] i {
+            color: #D44638;
+        }
+        
+        .share-option[data-platform="copy"] i {
+            color: #6c757d;
+        }
+        
+        .share-option span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @media (max-width: 576px) {
+            .share-modal-body {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .notification {
+                width: calc(100% - 40px);
+                top: 10px;
+                right: 20px;
+            }
+        }
+    </style>
+    </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .card h2 {
+            margin: 0 0 10px;
+            color: #007bff;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.2s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .no-payments {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #555;
+            font-size: 18px;
+        }
+        .auth-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .payment-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            margin: 10px 0;
+        }
+        .filter-group label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .filter-group select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .search-box {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Details</h1>
+        <div id="auth-status"></div>
+        <div id="filter-container" class="filter-container" style="display: none;">
+            <div class="filter-group">
+                <label for="payment-search">Search:</label>
+                <input type="text" id="payment-search" class="search-box" placeholder="Search by name...">
+            </div>
+            <div class="filter-group">
+                <label for="payment-method-filter">Payment Method:</label>
+                <select id="payment-method-filter">
+                    <option value="all">All Methods</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Cash">Cash</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="date-sort">Sort By Date:</label>
+                <select id="date-sort">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
+            </div>
+        </div>
+        <div id="payments-container">
+            <div class="loading">Loading payment data...</div>
+        </div>
+        <div class="btn-container">
+            <a href="admin dashboard.html" class="btn">Go Back</a>
+            <a href="makepayment.html" class="btn">Add New Payment</a>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const paymentsContainer = document.getElementById('payments-container');
+            const authStatusContainer = document.getElementById('auth-status');
+            const filterContainer = document.getElementById('filter-container');
+            const paymentMethodFilter = document.getElementById('payment-method-filter');
+            const dateSort = document.getElementById('date-sort');
+            const searchBox = document.getElementById('payment-search');
+            
+            // Check if user is authenticated
+            const token = localStorage.getItem('authToken');
+            const userRole = localStorage.getItem('userRole');
+          
+            
+            // Check if user has admin role
+            if (userRole !== 'admin') {
+                authStatusContainer.innerHTML = `
+                    <div class="auth-warning">
+                        You need admin privileges to view all payments.
+                    </div>
+                `;
+            }
+            
+            let allPayments = [];
+            
+            // Function to filter and display payments
+            function filterAndDisplayPayments() {
+                const methodFilter = paymentMethodFilter.value;
+                const sortOrder = dateSort.value;
+                const searchTerm = searchBox.value.toLowerCase();
+                
+                // Filter payments based on selected criteria
+                let filteredPayments = allPayments;
+                
+                // Filter by payment method
+                if (methodFilter !== 'all') {
+                    filteredPayments = filteredPayments.filter(payment => 
+                        payment.paymentMethod === methodFilter
+                    );
+                }
+                
+                // Filter by search term
+                if (searchTerm) {
+                    filteredPayments = filteredPayments.filter(payment => 
+                        payment.userName.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                // Sort by date
+                filteredPayments.sort((a, b) => {
+                    const dateA = new Date(a.paymentDate);
+                    const dateB = new Date(b.paymentDate);
+                    return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+                });
+                
+                // Clear container
+                paymentsContainer.innerHTML = '';
+                
+                if (filteredPayments.length === 0) {
+                    paymentsContainer.innerHTML = '<div class="no-payments">No payment records found matching your criteria.</div>';
+                    return;
+                }
+                
+                // Display filtered payments
+                filteredPayments.forEach(payment => {
+                    const paymentCard = document.createElement('div');
+                    paymentCard.className = 'card';
+                    
+                    // Format the date
+                    const paymentDate = new Date(payment.paymentDate);
+                    const formattedDate = paymentDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    // Determine payment status class
+                    const statusClass = payment.status === 'completed' ? 'status-completed' : 
+                                        payment.status === 'pending' ? 'status-pending' : 'status-failed';
+                    
+                    paymentCard.innerHTML = `
+                        <h2>User Name: ${payment.userName}</h2>
+                        <p><strong>Payment Date:</strong> ${formattedDate}</p>
+                        <p><strong>Amount:</strong> $${payment.amount}</p>
+                        <p><strong>Payment Method:</strong> ${payment.paymentMethod}</p>
+                        <p><strong>Status:</strong> <span class="payment-status ${statusClass}">${payment.status || 'completed'}</span></p>
+                        ${payment.notes ? `<p><strong>Notes:</strong> ${payment.notes}</p>` : ''}
+                    `;
+                    
+                    paymentsContainer.appendChild(paymentCard);
+                });
+            }
+            
+            // Add event listeners for filters
+            paymentMethodFilter.addEventListener('change', filterAndDisplayPayments);
+            dateSort.addEventListener('change', filterAndDisplayPayments);
+            searchBox.addEventListener('input', filterAndDisplayPayments);
+            
+            try {
+                // Fetch payments using the API utility function
+                allPayments = await api.getPayments();
+                
+                // Show filter container
+                filterContainer.style.display = 'flex';
+                
+                // Display payments
+                filterAndDisplayPayments();
+                
+            } catch (error) {
+                console.error('Error fetching payments:', error);
+                paymentsContainer.innerHTML = `
+                    <div class="error-message">
+                        Failed to load payment data. Please try again later.
+                    </div>
+                `;
+                
+                // For development/demo purposes, show sample data
+                allPayments = [
+                    {
+                        userName: 'Gagan',
+                        paymentDate: '2025-01-07',
+                        amount: 500,
+                        paymentMethod: 'Credit Card',
+                        status: 'completed'
+                    },
+                    {
+                        userName: 'Guru',
+                        paymentDate: '2025-01-02',
+                        amount: 450,
+                        paymentMethod: 'Bank Transfer',
+                        status: 'completed',
+                        notes: 'Monthly rent payment'
+                    },
+                    {
+                        userName: 'Shrujal',
+                        paymentDate: '2025-03-12',
+                        amount: 600,
+                        paymentMethod: 'UPI',
+                        status: 'pending'
+                    },
+                    {
+                        userName: 'Rahul',
+                        paymentDate: '2025-02-15',
+                        amount: 550,
+                        paymentMethod: 'Cash',
+                        status: 'completed'
+                    },
+                    {
+                        userName: 'Priya',
+                        paymentDate: '2025-02-10',
+                        amount: 475,
+                        paymentMethod: 'Credit Card',
+                        status: 'failed',
+                        notes: 'Payment declined - insufficient funds'
+                    }
+                ];
+                
+                // Show filter container
+                filterContainer.style.display = 'flex';
+                
+                // Display sample data
+                filterAndDisplayPayments();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - T.S PG SERVICES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/api.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+        
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        nav a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #01ffc8;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s;
+        }
+        
+        nav a:hover:after {
+            width: 70%;
+        }
+        
+        .auth-buttons a:last-child {
+            background: linear-gradient(45deg, #01ffc8, #65f0c6);
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-left: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .auth-buttons a:last-child:hover {
+            background: linear-gradient(45deg, #65f0c6, #01ffc8);
+            transform: scale(1.05);
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(135deg, #01ffc8, #65f0c6);
+            color: #333;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        section {
+            padding: 20px;
+        }
+        
+        section h2 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        section h2:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(45deg, #01ffc8, #65f0c6);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        section > p {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        /* Service Cards */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 330px;
+            overflow: hidden;
+            transition: transform 0.4s, box-shadow 0.4s;
+            background-color: #ffffff;
+        }
+        
+        .card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .card-content {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .card-content h3 {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 22px;
+        }
+        
+        .card-content p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .card-content a {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(45deg, #01ffc8, #65f0c6);
+            color: #333;
+            font-weight: bold;
+            border-radius: 50px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-content a:hover {
+            background: linear-gradient(45deg, #65f0c6, #01ffc8);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .details {
+            margin: 20px auto 50px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+            background-color: #ffffff;
+            max-width: 800px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .details h3 {
+            color: #333;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .details p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        /* PG Listings */
+        .pg-listings {
+            margin-top: 60px;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pg-card {
+            border: none;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .pg-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pg-card h3 {
+            color: #333;
+            margin-top: 0;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .pg-card .location {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .pg-card .location i {
+            margin-right: 8px;
+            color: #01ffc8;
+        }
+        
+        .pg-card .price {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 22px;
+            margin: 15px 0;
+        }
+        
+        .pg-card .amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .pg-card .amenity {
+            background-color: #e9f5ff;
+            color: #007BFF;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            transition: transform 0.3s;
+        }
+        
+        .pg-card .amenity:hover {
+            transform: translateY(-3px);
+        }
+        
+        .pg-card .type {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .pg-card .male {
+            background-color: #e9f5ff;
+            color: #007BFF;
+        }
+        
+        .pg-card .female {
+            background-color: #ffebf3;
+            color: #e83e8c;
+        }
+        
+        .pg-card .coed {
+            background-color: #f0f0f0;
+            color: #6c757d;
+        }
+        
+        .pg-card .availability {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .pg-card .available {
+            background-color: #d4edda;
+            color: #28a745;
+        }
+        
+        .pg-card .unavailable {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+        
+        .pg-card .book-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #01ffc8, #65f0c6);
+            color: #333;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pg-card .book-btn:hover {
+            background: linear-gradient(45deg, #65f0c6, #01ffc8);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            font-style: italic;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 60px 20px 20px;
+            margin-top: 50px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 2px;
+            background: #01ffc8;
+            bottom: 0;
+            left: 0;
+        }
+        
+        .footer-column p {
+            color: #bbb;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+        }
+        
+        .footer-links a:hover {
+            color: #01ffc8;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: #01ffc8;
+            color: #333;
+            transform: translateY(-5px);
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #bbb;
+        }
+        
+        .contact-info i {
+            margin-right: 10px;
+            color: #01ffc8;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #999;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .card-container {
+                gap: 20px;
+            }
+            
+            .card {
+                width: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(0, 0, 0, 0.9);
+                flex-direction: column;
+                padding: 40px 0;
+                transition: all 0.5s;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            nav a {
+                margin: 15px 0;
+                font-size: 18px;
+            }
+            
+            header h1 {
+                font-size: 28px;
+            }
+            
+            section h2 {
+                font-size: 26px;
+            }
+            
+            section > p {
+                font-size: 16px;
+            }
+            
+            .card {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .pg-card {
+                padding: 20px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">T.S PG SERVICES</div>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="services.html" class="active">Services</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="About.html">About Us</a>
+            <div class="auth-buttons">
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <header>
+            <h1>Our Premium PG Services</h1>
+        </header>
+        <main>
+            <section>
+                <h2>What We Offer</h2>
+                <p>We provide a comprehensive range of services to ensure your stay is comfortable, convenient, and enjoyable. Our goal is to create a home away from home for all our guests.</p>
+                
+                <div class="card-container">
+                    <div class="card">
+                        <img src="c:\Users\HP\Desktop\suju\security.jfif" alt="24/7 Security">
+                        <div class="card-content">
+                            <h3>24/7 Security</h3>
+                            <p>We provide round-the-clock security to ensure your safety and peace of mind during your stay.</p>
+                            <a onclick="showDetails('24/7 Security', 'We provide round-the-clock security to ensure your safety. Our premises are monitored by CCTV cameras and security personnel are always on duty. Access control systems are in place to prevent unauthorized entry, and emergency protocols are established for any situation.')">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="c:\Users\HP\Desktop\suju\speed internet.jfif" alt="High-Speed Internet">
+                        <div class="card-content">
+                            <h3>High-Speed Internet</h3>
+                            <p>Enjoy reliable and fast internet access in all areas of our accommodation facilities.</p>
+                            <a onclick="showDetails('High-Speed Internet', 'Enjoy high-speed fiber optic internet access in all rooms and common areas. Our network is reliable and fast, ensuring you stay connected at all times. We provide both Wi-Fi and Ethernet connections with speeds up to 100 Mbps, perfect for work, study, or entertainment.')">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="c:\Users\HP\Desktop\suju\housekeeping.jfif" alt="Daily Housekeeping">
+                        <div class="card-content">
+                            <h3>Daily Housekeeping</h3>
+                            <p>Our professional staff ensures your room is clean and tidy every day for maximum comfort.</p>
+                            <a onclick="showDetails('Daily Housekeeping', 'Our housekeeping staff ensures your room is clean and tidy every day. We provide fresh linens, towels, and maintain hygiene standards. Our cleaning protocols include sanitization of high-touch surfaces, regular deep cleaning, and waste management to ensure a healthy living environment.')">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="c:\Users\HP\Desktop\suju\wonderful-little-room-with-single-bed_305343-17820.jpg" alt="Fully Furnished Rooms">
+                        <div class="card-content">
+                            <h3>Fully Furnished Rooms</h3>
+                            <p>Comfortable, modern rooms with all necessary amenities for a pleasant stay.</p>
+                            <a onclick="showDetails('Fully Furnished Rooms', 'Our rooms are fully furnished with all the amenities you need, including comfortable beds with premium mattresses, spacious wardrobes, study tables, chairs, and adequate lighting. Each room is designed to provide both comfort and functionality, with attention to detail in every aspect.')">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="c:\Users\HP\Desktop\suju\laundry.jpg" alt="Laundry Services">
+                        <div class="card-content">
+                            <h3>Laundry Services</h3>
+                            <p>Keep your clothes clean and fresh with our convenient laundry services.</p>
+                            <a onclick="showDetails('Laundry Services', 'We offer comprehensive laundry services to keep your clothes clean and fresh. Our laundry facilities are equipped with modern washing machines and dryers. We provide both self-service options and full-service laundry with washing, drying, and folding at affordable rates. Special care is taken for delicate fabrics.')">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="c:\Users\HP\Desktop\suju\food.jpg" alt="Food Service">
+                        <div class="card-content">
+                            <h3>Food Service</h3>
+                            <p>Delicious and nutritious meals served daily to satisfy your taste buds.</p>
+                            <a onclick="showDetails('Food Service', 'We provide delicious and nutritious meals three times a day. Our menu includes a variety of dishes to cater to different tastes and dietary requirements. Our professional chefs prepare meals using fresh ingredients, and we regularly rotate our menu to ensure variety. Special dietary needs can be accommodated upon request.')">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="details" class="details"></div>
+                
+              
+            </section>
+        </main>
+        <footer>
+           
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="About.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="signup.html">Sign Up</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>K narayanapura, kothanur</span>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <span>+91 9945615305</span>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <span>shrujal7848@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 T.S PG Services. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function showDetails(title, description) {
+            const detailsDiv = document.getElementById('details');
+            detailsDiv.innerHTML = `<h3>${title}</h3><p>${description}</p>`;
+            detailsDiv.style.display = 'block';
+            
+            // Smooth scroll to details
+            detailsDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Navigation Toggle
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            
+            hamburger.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking on a link
+            const navItems = document.querySelectorAll('.nav-links a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Load PG listings
+            const pgListingsContainer = document.getElementById('pgListingsContainer');
+
+            // Use our API utility to get listings
+            api.getRoomListings()
+                .then(listings => {
+                    pgListingsContainer.innerHTML = ''; // Clear loading message
+
+                    if (listings.length === 0) {
+                        pgListingsContainer.innerHTML = '<p style="text-align: center; padding: 30px; color: #666;">No PG listings available at the moment. Please check back later.</p>';
+                        return;
+                    }
+
+                    listings.forEach(listing => {
+                        const typeClass = listing.type.toLowerCase();
+                        const availabilityClass = listing.available ? 'available' : 'unavailable';
+                        const availabilityText = listing.available ? 'Available' : 'Fully Occupied';
+
+                        const amenitiesHTML = listing.amenities.map(amenity =>
+                            `<span class="amenity"><i class="fas fa-check-circle"></i> ${amenity}</span>`
+                        ).join('');
+
+                        const pgCard = `
+                            <div class="pg-card">
+                                <h3>${listing.name}</h3>
+                                <div class="location"><i class="fas fa-map-marker-alt"></i> ${listing.location}</div>
+                                <div>
+                                    <span class="type ${typeClass}">${listing.type}</span>
+                                    <span class="availability ${availabilityClass}">
+                                        <i class="fas ${availabilityClass === 'available' ? 'fa-check-circle' : 'fa-times-circle'}"></i> 
+                                        ${availabilityText}
+                                    </span>
+                                </div>
+                                <div class="price">₹${listing.price}/month</div>
+                                <div class="amenities">
+                                    ${amenitiesHTML}
+                                </div>
+                                ${listing.available ? 
+                                    `<a href="bookings.html?id=${listing.id}" class="book-btn"><i class="fas fa-bookmark"></i> Book Now</a>` : 
+                                    `<span style="color: #dc3545; font-style: italic; display: block; margin-top: 15px;">
+                                        <i class="fas fa-exclamation-circle"></i> Currently not available for booking
+                                    </span>`
+                                }
+                            </div>
+                        `;
+
+                        pgListingsContainer.innerHTML += pgCard;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching PG listings:', error);
+                    pgListingsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 30px;">
+                            <p style="color: #dc3545; font-size: 18px; margin-bottom: 10px;">
+                                <i class="fas fa-exclamation-triangle"></i> Failed to load PG listings. Please try again later.
+                            </p>
+                            <p style="font-size: 14px; color: #666;">Error: ${error.message}</p>
+                            <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #01ffc8; border: none; border-radius: 5px; cursor: pointer;">
+                                <i class="fas fa-sync-alt"></i> Retry
+                            </button>
+                        </div>
+                    `;
+                });
+        });
+    </script>
+</body>
+</html>

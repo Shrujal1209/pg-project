@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Net Banking - Paying Guest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(to bottom right, #f9f9ff, #e8e8ff);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            color: #333;
+            font-size: 28px;
+            margin: 0;
+        }
+        header .logo {
+            color: #007bff;
+            margin-right: 10px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            padding: 30px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h2 {
+            text-align: center;
+            color: #444;
+            margin-bottom: 25px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .card h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 3px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        .custom-select {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .custom-select select {
+            display: none;
+        }
+        .custom-select .select-selected {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        .custom-select .select-selected:hover {
+            border-color: #aaa;
+        }
+        .custom-select .select-items {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            z-index: 99;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .custom-select .select-items div {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+        .custom-select .select-items div img {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            object-fit: contain;
+        }
+        .custom-select .select-items div:hover {
+            background-color: #f1f1f1;
+        }
+        .custom-select .select-selected:after {
+            content: "\25BC";
+            float: right;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #777;
+        }
+        .custom-select .select-selected.select-arrow-active:after {
+            content: "\25B2";
+        }
+        input, button {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        input::placeholder {
+            color: #aaa;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        .input-group input {
+            padding-left: 40px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 86, 179, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+            font-size: 14px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .bank-logo-selected {
+            display: flex;
+            align-items: center;
+        }
+        .bank-logo-selected img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        .payment-info {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .payment-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .payment-info .amount {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 18px;
+        }
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            color: #28a745;
+            font-size: 14px;
+            gap: 5px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <header>
+            <h1><i class="fas fa-university logo"></i> Paying Guest</h1>
+        </header>
+        <main>
+            <h2>Net Banking Payment</h2>
+            
+            <div class="payment-info">
+                <p>Transaction ID: <span id="transactionId">PG-NB-<script>document.write(Math.floor(Math.random() * 1000000) + 1000000)</script></span></p>
+                <p>Payment for: <span id="paymentFor">Room Booking</span></p>
+                <p>Amount: <span class="amount" id="displayAmount">₹10,000.00</span></p>
+            </div>
+            
+            <form id="netBankingForm" action="process_payment.php" method="POST">
+                <label for="bankName">Select Your Bank:</label>
+                <div class="custom-select">
+                    <div class="select-selected">--Select Bank--</div>
+                    <div class="select-items">
+                        <div data-value="hdfc"><img src="c:\Users\HP\Desktop\suju\hdfc.jpg" alt="HDFC Bank"> HDFC Bank</div>
+                        <div data-value="icici"><img src="c:\Users\HP\Desktop\suju\icici.png" alt="ICICI Bank"> ICICI Bank</div>
+                        <div data-value="sbi"><img src="c:\Users\HP\Desktop\suju\sbi.png" alt="State Bank of India"> State Bank of India</div>
+                        <div data-value="axis"><img src="c:\Users\HP\Desktop\suju\axis.png" alt="Axis Bank"> Axis Bank</div>
+                        <div data-value="kotak"><img src="c:\Users\HP\Desktop\suju\kotak.png" alt="Kotak Mahindra Bank"> Kotak Mahindra Bank</div>
+                        <div data-value="yesbank"><img src="c:\Users\HP\Desktop\suju\yes.png" alt="Yes Bank"> Yes Bank</div>
+                        <div data-value="canara"><img src="c:\Users\HP\Desktop\suju\canara.jpg" alt="Canara Bank"> Canara Bank</div>
+                        <div data-value="uco"><img src="c:\Users\HP\Desktop\suju\baroda.png" alt="Bank Of Baroda"> Bank Of Baroda</div>
+                        <div data-value="union"><img src="c:\Users\HP\Desktop\suju\south.png" alt="South Indian Bank"> south Indian Bank</div>
+                    </div>
+                </div>
+                <div class="error-message" id="bankError">Please select your bank</div>
+                <input type="hidden" id="bankName" name="bankName" required>
+                
+                <label for="accountNumber">Account Number:</label>
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="accountNumber" name="accountNumber" placeholder="Enter your account number" required>
+                </div>
+                <div class="error-message" id="accountError">Please enter a valid account number</div>
+                
+                <label for="username">Username / Customer ID:</label>
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="username" name="username" placeholder="Enter your username or customer ID" required>
+                </div>
+                <div class="error-message" id="usernameError">Please enter your username or customer ID</div>
+                
+                <label for="password">Password:</label>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="error-message" id="passwordError">Please enter your password</div>
+                
+                <input type="hidden" id="amount" name="amount" value="10000.00">
+                <button type="submit" id="submitBtn"><i class="fas fa-shield-alt"></i> Proceed to Pay</button>
+            </form>
+            
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Processing your payment...</p>
+                <p>Please do not refresh or close this page.</p>
+            </div>
+            
+            <div class="secure-badge">
+                <i class="fas fa-lock"></i> Secure Payment Gateway
+            </div>
+            
+            <a href="payment.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Payment Options</a>
+        </main>
+        <footer>
+            <p>&copy; 2025 Paying Guest. All rights reserved.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectSelected = document.querySelector('.select-selected');
+            const selectItems = document.querySelector('.select-items');
+            const hiddenInput = document.getElementById('bankName');
+            const form = document.getElementById('netBankingForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            // Format the amount with commas
+            const amountValue = parseFloat(document.getElementById('amount').value);
+            document.getElementById('displayAmount').textContent = '₹' + amountValue.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            // Custom dropdown functionality
+            selectSelected.addEventListener('click', function () {
+                selectItems.style.display = selectItems.style.display === 'block' ? 'none' : 'block';
+                this.classList.toggle('select-arrow-active');
+            });
+
+            selectItems.addEventListener('click', function (e) {
+                if (e.target.closest('div[data-value]')) {
+                    const selectedDiv = e.target.closest('div[data-value]');
+                    const bankImg = selectedDiv.querySelector('img').cloneNode(true);
+                    const bankName = selectedDiv.textContent.trim();
+                    
+                    // Clear previous content and add image + text
+                    selectSelected.innerHTML = '';
+                    selectSelected.classList.add('bank-logo-selected');
+                    selectSelected.appendChild(bankImg);
+                    selectSelected.appendChild(document.createTextNode(bankName));
+                    
+                    hiddenInput.value = selectedDiv.getAttribute('data-value');
+                    selectItems.style.display = 'none';
+                    selectSelected.classList.remove('select-arrow-active');
+                    document.getElementById('bankError').style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.custom-select')) {
+                    selectItems.style.display = 'none';
+                    selectSelected.classList.remove('select-arrow-active');
+                }
+            });
+            
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                // Bank validation
+                if (!hiddenInput.value) {
+                    document.getElementById('bankError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Account number validation
+                const accountNumber = document.getElementById('accountNumber').value;
+                if (!accountNumber || accountNumber.length < 8) {
+                    document.getElementById('accountError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('accountError').style.display = 'none';
+                }
+                
+                // Username validation
+                const username = document.getElementById('username').value;
+                if (!username) {
+                    document.getElementById('usernameError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('usernameError').style.display = 'none';
+                }
+                
+                // Password validation
+                const password = document.getElementById('password').value;
+                if (!password) {
+                    document.getElementById('passwordError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('passwordError').style.display = 'none';
+                }
+                
+                if (isValid) {
+                    // Show loading indicator
+                    form.style.display = 'none';
+                    loadingIndicator.style.display = 'block';
+                    
+                    // Simulate processing (in a real app, this would be the actual form submission)
+                    setTimeout(function() {
+                        window.location.href = 'payment_success.html';
+                    }, 3000);
+                }
+            });
+            
+            // Clear error messages on input
+            document.getElementById('accountNumber').addEventListener('input', function() {
+                document.getElementById('accountError').style.display = 'none';
+            });
+            
+            document.getElementById('username').addEventListener('input', function() {
+                document.getElementById('usernameError').style.display = 'none';
+            });
+            
+            document.getElementById('password').addEventListener('input', function() {
+                document.getElementById('passwordError').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

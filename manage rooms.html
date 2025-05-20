@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rooms | PG Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007BFF;
+            --primary-dark: #0056b3;
+            --secondary-color: #6c757d;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 0.7rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .navbar ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        .navbar ul li {
+            margin-left: 1rem;
+        }
+        
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .navbar a:hover {
+            color: var(--primary-color);
+        }
+        
+        .navbar .active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .search-box {
+            display: flex;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 1rem;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-options select {
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            min-width: 150px;
+        }
+        
+        /* Room Grid */
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .room-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .room-header {
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            position: relative;
+        }
+        
+        .room-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .room-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-available {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .status-occupied {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .status-maintenance {
+            background-color: var(--warning-color);
+            color: black;
+        }
+        
+        .room-body {
+            padding: 1rem;
+        }
+        
+        .room-info {
+            margin-bottom: 1rem;
+        }
+        
+        .room-info p {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .room-info i {
+            width: 25px;
+            color: var(--secondary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .room-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 1.2rem;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: black;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-lg {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            animation: slideIn 0.3s;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--dark-color);
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close:hover {
+            color: var(--danger-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.7rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            list-style: none;
+        }
+        
+        .pagination li {
+            margin: 0 0.3rem;
+        }
+        
+        .pagination a {
+            display: block;
+            padding: 0.5rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--primary-color);
+            transition: all 0.3s;
+        }
+        
+        .pagination a:hover {
+            background-color: #f4f4f4;
+        }
+        
+        .pagination .active a {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .navbar ul {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .navbar ul li {
+                margin: 0.5rem;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">PG Management</div>
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="tenants.html">Tenants</a></li>
+            <li><a href="manage rooms.html" class="active">Rooms</a></li>
+            <li><a href="payments.html">Payments</a></li>
+            <li><a href="complaints.html">Complaints</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Manage Rooms</h1>
+            <button id="addRoomBtn" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Add New Room
+            </button>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-filter">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search rooms...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="filter-options">
+              
+                <select id="filterStatus">
+                    <option value="">All Statuses</option>
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
+               
+            </div>
+        </div>
+
+        <!-- Room Grid -->
+        <div class="room-grid" id="roomGrid">
+            <!-- Room Card 1 -->
+            <div class="room-card" data-room-id="101" data-room-type="Single" data-room-status="Available" data-room-floor="1">
+                <div class="room-header">
+                    <h3>Room 101</h3>
+                    <span class="room-status status-available">Available</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: Single</p>
+                      
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹8,000/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: 120 sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: Yes</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="101">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="101">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Card 2 -->
+            <div class="room-card" data-room-id="102" data-room-type="Double" data-room-status="Occupied" data-room-floor="1">
+                <div class="room-header">
+                    <h3>Room 102</h3>
+                    <span class="room-status status-occupied">Occupied</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: Double</p>
+                       
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹12,000/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: 180 sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: Yes</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="102">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="102">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Card 3 -->
+            <div class="room-card" data-room-id="201" data-room-type="Triple" data-room-status="Available" data-room-floor="2">
+                <div class="room-header">
+                    <h3>Room 201</h3>
+                    <span class="room-status status-available">Available</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: Triple</p>
+                       
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹15,000/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: 240 sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: Yes</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="201">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="201">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Card 4 -->
+            <div class="room-card" data-room-id="202" data-room-type="Deluxe" data-room-status="Maintenance" data-room-floor="2">
+                <div class="room-header">
+                    <h3>Room 202</h3>
+                    <span class="room-status status-maintenance">Maintenance</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: Deluxe</p>
+                      
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹18,000/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: 280 sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: Yes</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="202">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="202">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Card 5 -->
+            <div class="room-card" data-room-id="301" data-room-type="Single" data-room-status="Occupied" data-room-floor="3">
+                <div class="room-header">
+                    <h3>Room 301</h3>
+                    <span class="room-status status-occupied">Occupied</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: Single</p>
+                       
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹8,500/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: 120 sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: Yes</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="301">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="301">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Card 6 -->
+            <div class="room-card" data-room-id="302" data-room-type="Double" data-room-status="Available" data-room-floor="3">
+                <div class="room-header">
+                    <h3>Room 302</h3>
+                    <span class="room-status status-available">Available</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: Double</p>
+                        
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹12,500/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: 180 sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: Yes</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="302">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="302">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+       
+            
+    </div>
+
+    <!-- Add Room Modal -->
+    <div id="addRoomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Room</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addRoomForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="roomNumber">Room Number</label>
+                        <input type="text" id="roomNumber" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                       
+                    </div>
+                    <div class="form-group">
+                        <label for="roomStatus">Status</label>
+                        <select id="roomStatus" class="form-control" required>
+                            <option value="">Select Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Occupied">Occupied</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="roomRent">Monthly Rent (₹)</label>
+                        <input type="number" id="roomRent" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomSize">Room Size (sq.ft)</label>
+                        <input type="number" id="roomSize" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                   
+                </div>
+                <div class="form-group">
+                    <label for="roomDescription">Description</label>
+                    <textarea id="roomDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Room Modal -->
+    <div id="editRoomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Room</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="editRoomForm">
+                <input type="hidden" id="editRoomId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editRoomNumber">Room Number</label>
+                        <input type="text" id="editRoomNumber" class="form-control" required>
+                    </div>
+                    
+                </div>
+               
+                <div class="form-group">
+                    <label for="editRoomDescription">Description</label>
+                    <textarea id="editRoomDescription" class="form-control" rows=""></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteRoomModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div style="padding: 1rem 0;">
+                <p>Are you sure you want to delete this room? This action cannot be undone.</p>
+                <p><strong>Room: <span id="deleteRoomNumber"></span></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 PG Management System. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/api.js"></script>
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is authenticated
+          
+            
+            // Check if user has admin role
+           
+            
+            // Initialize UI
+            initializeUI();
+            
+            // Load rooms from backend
+            await loadRooms();
+        });
+        
+        // DOM Elements
+        const roomGrid = document.getElementById('roomGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterType = document.getElementById('filterType');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterFloor = document.getElementById('filterFloor');
+        const addRoomBtn = document.getElementById('addRoomBtn');
+        const addRoomModal = document.getElementById('addRoomModal');
+        const editRoomModal = document.getElementById('editRoomModal');
+        const deleteRoomModal = document.getElementById('deleteRoomModal');
+        const addRoomForm = document.getElementById('addRoomForm');
+        const editRoomForm = document.getElementById('editRoomForm');
+        const closeButtons = document.querySelectorAll('.close, .close-modal');
+        const deleteRoomNumber = document.getElementById('deleteRoomNumber');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        
+        // Room Data
+        let rooms = [];
+        
+        // Load rooms from backend
+        async function loadRooms() {
+            try {
+                // Show loading state
+                roomGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                        <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; 
+                             border-top: 4px solid var(--primary-color); border-radius: 50%; 
+                             animation: spin 1s linear infinite;"></div>
+                        <p style="margin-top: 1rem;">Loading rooms...</p>
+                    </div>
+                `;
+                
+                // Get auth token
+                const token = localStorage.getItem('authToken');
+                
+                // Fetch rooms from backend
+                const response = await fetch(`${API_BASE_URL}/rooms`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    rooms = await response.json();
+                    renderRooms();
+                } else {
+                    throw new Error('Failed to fetch rooms');
+                }
+            } catch (error) {
+                console.error('Error loading rooms:', error);
+                
+                // Show error message
+                roomGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; 
+                         background-color: #f8d7da; color: #721c24; border-radius: 5px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Failed to load rooms. Please try again later.</p>
+                        <button onclick="loadRooms()" class="btn btn-primary" style="margin-top: 1rem;">
+                            Retry
+                        </button>
+                    </div>
+                `;
+                
+                // Load sample data for demonstration
+                setTimeout(() => {
+                    if (roomGrid.querySelector('.btn-primary')) {
+                        loadSampleRooms();
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Load sample room data for demonstration
+        function loadSampleRooms() {
+            rooms = [
+            {
+                id: '101',
+                number: '101',
+                type: 'Single',
+                floor: '1',
+                status: 'Available',
+                rent: 8000,
+                size: 120,
+                amenities: {
+                    ac: true,
+                    tv: false,
+                    wifi: true,
+                    geyser: true,
+                    attachedBathroom: false
+                },
+                description: 'Comfortable single room with good ventilation'
+            },
+            {
+                id: '102',
+                number: '102',
+                type: 'Double',
+                floor: '1',
+                status: 'Occupied',
+                rent: 12000,
+                size: 180,
+                amenities: {
+                    ac: true,
+                    tv: true,
+                    wifi: true,
+                    geyser: true,
+                    attachedBathroom: true
+                },
+                description: 'Spacious double room with attached bathroom'
+            },
+            {
+                id: '201',
+                number: '201',
+                type: 'Triple',
+                floor: '2',
+                status: 'Available',
+                rent: 15000,
+                size: 240,
+                amenities: {
+                    ac: true,
+                    tv: true,
+                    wifi: true,
+                    geyser: true,
+                    attachedBathroom: true
+                },
+                description: 'Large triple room with all amenities'
+            },
+            {
+                id: '202',
+                number: '202',
+                type: 'Deluxe',
+                floor: '2',
+                status: 'Maintenance',
+                rent: 18000,
+                size: 280,
+                amenities: {
+                    ac: true,
+                    tv: true,
+                    wifi: true,
+                    geyser: true,
+                    attachedBathroom: true
+                },
+                description: 'Premium deluxe room with luxury furnishings'
+            },
+            {
+                id: '301',
+                number: '301',
+                type: 'Single',
+                floor: '3',
+                status: 'Occupied',
+                rent: 8500,
+                size: 120,
+                amenities: {
+                    ac: true,
+                    tv: false,
+                    wifi: true,
+                    geyser: true,
+                    attachedBathroom: false
+                },
+                description: 'Cozy single room with good view'
+            },
+            {
+                id: '302',
+                number: '302',
+                type: 'Double',
+                floor: '3',
+                status: 'Available',
+                rent: 12500,
+                size: 180,
+                amenities: {
+                    ac: true,
+                    tv: true,
+                    wifi: true,
+                    geyser: true,
+                    attachedBathroom: true
+                },
+                description: 'Modern double room with all facilities'
+            }
+        ];
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Filter and search functionality
+            searchInput.addEventListener('input', filterRooms);
+            filterType.addEventListener('change', filterRooms);
+            filterStatus.addEventListener('change', filterRooms);
+            filterFloor.addEventListener('change', filterRooms);
+            
+            // Modal functionality
+            addRoomBtn.addEventListener('click', () => openModal(addRoomModal));
+            
+            // Close modals
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    closeModal(addRoomModal);
+                    closeModal(editRoomModal);
+                    closeModal(deleteRoomModal);
+                });
+            });
+            
+            // Form submissions
+            addRoomForm.addEventListener('submit', handleAddRoom);
+            editRoomForm.addEventListener('submit', handleEditRoom);
+            
+            // Edit and delete buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.edit-room-btn')) {
+                    const roomId = e.target.closest('.edit-room-btn').dataset.roomId;
+                    openEditModal(roomId);
+                }
+                
+                if (e.target.closest('.delete-room-btn')) {
+                    const roomId = e.target.closest('.delete-room-btn').dataset.roomId;
+                    openDeleteModal(roomId);
+                }
+            });
+            
+            // Confirm delete
+            confirmDeleteBtn.addEventListener('click', handleDeleteRoom);
+        });
+
+        // Functions
+        function filterRooms() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const typeFilter = filterType.value;
+            const statusFilter = filterStatus.value;
+            const floorFilter = filterFloor.value;
+            
+            const roomCards = document.querySelectorAll('.room-card');
+            
+            roomCards.forEach(card => {
+                const roomType = card.dataset.roomType;
+                const roomStatus = card.dataset.roomStatus;
+                const roomFloor = card.dataset.roomFloor;
+                const roomText = card.textContent.toLowerCase();
+                
+                const matchesSearch = searchTerm === '' || roomText.includes(searchTerm);
+                const matchesType = typeFilter === '' || roomType === typeFilter;
+                const matchesStatus = statusFilter === '' || roomStatus === statusFilter;
+                const matchesFloor = floorFilter === '' || roomFloor === floorFilter;
+                
+                if (matchesSearch && matchesType && matchesStatus && matchesFloor) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function openModal(modal) {
+            modal.style.display = 'block';
+        }
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        function openEditModal(roomId) {
+            const room = rooms.find(r => r.id === roomId);
+            if (room) {
+                document.getElementById('editRoomId').value = room.id;
+                document.getElementById('editRoomNumber').value = room.number;
+                document.getElementById('editRoomType').value = room.type;
+                document.getElementById('editRoomFloor').value = room.floor;
+                document.getElementById('editRoomStatus').value = room.status;
+                document.getElementById('editRoomRent').value = room.rent;
+                document.getElementById('editRoomSize').value = room.size;
+                document.getElementById('editHasAC').checked = room.amenities.ac;
+                document.getElementById('editHasTV').checked = room.amenities.tv;
+                document.getElementById('editHasWifi').checked = room.amenities.wifi;
+                document.getElementById('editHasGeyser').checked = room.amenities.geyser;
+                document.getElementById('editHasAttachedBathroom').checked = room.amenities.attachedBathroom;
+                document.getElementById('editRoomDescription').value = room.description;
+                
+                openModal(editRoomModal);
+            }
+        }
+
+        function openDeleteModal(roomId) {
+            const room = rooms.find(r => r.id === roomId);
+            if (room) {
+                deleteRoomNumber.textContent = room.number;
+                confirmDeleteBtn.dataset.roomId = roomId;
+                openModal(deleteRoomModal);
+            }
+        }
+
+        function handleAddRoom(e) {
+            e.preventDefault();
+            
+            // In a real application, this would send data to a server
+            const newRoom = {
+                id: generateId(),
+                number: document.getElementById('roomNumber').value,
+                type: document.getElementById('roomType').value,
+                floor: document.getElementById('roomFloor').value,
+                status: document.getElementById('roomStatus').value,
+                rent: parseInt(document.getElementById('roomRent').value),
+                size: parseInt(document.getElementById('roomSize').value),
+                amenities: {
+                    ac: document.getElementById('hasAC').checked,
+                    tv: document.getElementById('hasTV').checked,
+                    wifi: document.getElementById('hasWifi').checked,
+                    geyser: document.getElementById('hasGeyser').checked,
+                    attachedBathroom: document.getElementById('hasAttachedBathroom').checked
+                },
+                description: document.getElementById('roomDescription').value
+            };
+            
+            rooms.push(newRoom);
+            addRoomToUI(newRoom);
+            closeModal(addRoomModal);
+            addRoomForm.reset();
+            
+            showNotification('Room added successfully!', 'success');
+        }
+
+        function handleEditRoom(e) {
+            e.preventDefault();
+            
+            const roomId = document.getElementById('editRoomId').value;
+            const roomIndex = rooms.findIndex(r => r.id === roomId);
+            
+            if (roomIndex !== -1) {
+                // Update room data
+                rooms[roomIndex] = {
+                    id: roomId,
+                    number: document.getElementById('editRoomNumber').value,
+                    type: document.getElementById('editRoomType').value,
+                    floor: document.getElementById('editRoomFloor').value,
+                    status: document.getElementById('editRoomStatus').value,
+                    rent: parseInt(document.getElementById('editRoomRent').value),
+                    size: parseInt(document.getElementById('editRoomSize').value),
+                    amenities: {
+                        ac: document.getElementById('editHasAC').checked,
+                        tv: document.getElementById('editHasTV').checked,
+                        wifi: document.getElementById('editHasWifi').checked,
+                        geyser: document.getElementById('editHasGeyser').checked,
+                        attachedBathroom: document.getElementById('editHasAttachedBathroom').checked
+                    },
+                    description: document.getElementById('editRoomDescription').value
+                };
+                
+                // Update UI
+                updateRoomInUI(rooms[roomIndex]);
+                closeModal(editRoomModal);
+                
+                showNotification('Room updated successfully!', 'success');
+            }
+        }
+
+        function handleDeleteRoom() {
+            const roomId = confirmDeleteBtn.dataset.roomId;
+            const roomIndex = rooms.findIndex(r => r.id === roomId);
+            
+            if (roomIndex !== -1) {
+                rooms.splice(roomIndex, 1);
+                
+                // Remove from UI
+                const roomCard = document.querySelector(`.room-card[data-room-id="${roomId}"]`);
+                if (roomCard) {
+                    roomCard.remove();
+                }
+                
+                closeModal(deleteRoomModal);
+                showNotification('Room deleted successfully!', 'success');
+            }
+        }
+
+        function addRoomToUI(room) {
+            const statusClass = getStatusClass(room.status);
+            
+            const roomCard = document.createElement('div');
+            roomCard.className = 'room-card';
+            roomCard.dataset.roomId = room.id;
+            roomCard.dataset.roomType = room.type;
+            roomCard.dataset.roomStatus = room.status;
+            roomCard.dataset.roomFloor = room.floor;
+            
+            roomCard.innerHTML = `
+                <div class="room-header">
+                    <h3>Room ${room.number}</h3>
+                    <span class="room-status ${statusClass}">${room.status}</span>
+                </div>
+                <div class="room-body">
+                    <div class="room-info">
+                        <p><i class="fas fa-bed"></i> Type: ${room.type}</p>
+                        <p><i class="fas fa-building"></i> Floor: ${getFloorText(room.floor)}</p>
+                        <p><i class="fas fa-rupee-sign"></i> Rent: ₹${room.rent.toLocaleString()}/month</p>
+                        <p><i class="fas fa-ruler-combined"></i> Size: ${room.size} sq.ft</p>
+                        <p><i class="fas fa-fan"></i> AC: ${room.amenities.ac ? 'Yes' : 'No'}</p>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-primary edit-room-btn" data-room-id="${room.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-room-btn" data-room-id="${room.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            roomGrid.appendChild(roomCard);
+        }
+
+        function updateRoomInUI(room) {
+            const roomCard = document.querySelector(`.room-card[data-room-id="${room.id}"]`);
+            if (roomCard) {
+                const statusClass = getStatusClass(room.status);
+                
+                roomCard.dataset.roomType = room.type;
+                roomCard.dataset.roomStatus = room.status;
+                roomCard.dataset.roomFloor = room.floor;
+                
+                roomCard.innerHTML = `
+                    <div class="room-header">
+                        <h3>Room ${room.number}</h3>
+                        <span class="room-status ${statusClass}">${room.status}</span>
+                    </div>
+                    <div class="room-body">
+                        <div class="room-info">
+                            <p><i class="fas fa-bed"></i> Type: ${room.type}</p>
+                            <p><i class="fas fa-building"></i> Floor: ${getFloorText(room.floor)}</p>
+                            <p><i class="fas fa-rupee-sign"></i> Rent: ₹${room.rent.toLocaleString()}/month</p>
+                            <p><i class="fas fa-ruler-combined"></i> Size: ${room.size} sq.ft</p>
+                            <p><i class="fas fa-fan"></i> AC: ${room.amenities.ac ? 'Yes' : 'No'}</p>
+                        </div>
+                        <div class="room-actions">
+                            <button class="btn btn-primary edit-room-btn" data-room-id="${room.id}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-danger delete-room-btn" data-room-id="${room.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'Available':
+                    return 'status-available';
+                case 'Occupied':
+                    return 'status-occupied';
+                case 'Maintenance':
+                    return 'status-maintenance';
+                default:
+                    return '';
+            }
+        }
+
+        function getFloorText(floor) {
+            switch (floor) {
+                case '1':
+                    return '1st Floor';
+                case '2':
+                    return '2nd Floor';
+                case '3':
+                    return '3rd Floor';
+                case '4':
+                    return '4th Floor';
+                default:
+                    return `${floor}th Floor`;
+            }
+        }
+
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            // Style the notification
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.color = 'white';
+            notification.style.zIndex = '1000';
+            notification.style.boxShadow = '0 3px 6px rgba(0,0,0,0.16)';
+            notification.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
+            
+            // Set background color based on type
+            if (type === 'success') {
+                notification.style.backgroundColor = '#28a745';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#dc3545';
+            } else {
+                notification.style.backgroundColor = '#007bff';
+            }
+            
+            // Add to document
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    </script>
+</body>
+</html>

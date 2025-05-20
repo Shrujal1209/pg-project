@@ -1,0 +1,2844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Tenants</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #00c2c2;
+            --primary-light: #4ceff5;
+            --primary-dark: #00a0a0;
+            --secondary-color: #ff6b6b;
+            --secondary-light: #ff9e9e;
+            --secondary-dark: #e64545;
+            --accent-color: #ffbe0b;
+            --accent-light: #ffd44c;
+            --accent-dark: #e6a800;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(-45deg, #e0f7fa, #b2ebf2, #c1e4fc, #d4f0f7);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="1.5" fill="%2300c2c2" opacity="0.2"/></svg>');
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color), var(--primary-color));
+        }
+        
+        header i {
+            display: inline-block;
+            margin-right: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .container {
+            margin: 40px auto;
+            padding: 35px;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 194, 194, 0.1) 0%, rgba(0, 194, 194, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: var(--primary-color);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        #tenantsTableContainer {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        #tenantsTableContainer:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 25px;
+            font-size: 16px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            position: relative;
+        }
+        
+        table::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        #tenantsTableContainer:hover table::after {
+            opacity: 1;
+        }
+        
+        table th, table td {
+            padding: 20px 15px;
+            text-align: center;
+        }
+        
+        table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        table th::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+        }
+        
+        table th i {
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            vertical-align: middle;
+            transition: transform 0.3s ease;
+        }
+        
+        table tr:hover th i {
+            transform: scale(1.2);
+        }
+        
+        table tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+        }
+        
+        table tr:last-child {
+            border-bottom: none;
+        }
+        
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        table tr:hover {
+            background-color: #f0f8ff;
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            z-index: 10;
+        }
+        
+        .action-buttons button {
+            padding: 12px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-buttons button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            transition: all 0.5s ease;
+            transform: scale(0);
+            opacity: 0;
+        }
+        
+        .action-buttons button:hover::after {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .action-buttons .edit {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 190, 11, 0.2);
+        }
+        
+        .action-buttons .edit:hover {
+            background-color: var(--accent-dark);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 190, 11, 0.3);
+        }
+        
+        .action-buttons .delete {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+        }
+        
+        .action-buttons .delete:hover {
+            background-color: var(--secondary-dark);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 40px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0, 194, 194, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .back-button:hover::before {
+            opacity: 1;
+        }
+        
+        .back-button::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            z-index: -1;
+            transform: scale(0);
+            transition: transform 0.5s ease;
+        }
+        
+        .back-button:active::after {
+            transform: scale(25);
+            transition: transform 0.3s ease;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 194, 194, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .back-button i {
+            transition: transform 0.3s ease;
+        }
+        
+        .back-button:hover i {
+            transform: translateX(-5px);
+        }
+        
+        /* Page Particles */
+        .page-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .page-particles::before,
+        .page-particles::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            opacity: 0.2;
+            animation: float-particle 15s infinite linear;
+        }
+        
+        .page-particles::before {
+            top: 20%;
+            left: 10%;
+            width: 15px;
+            height: 15px;
+        }
+        
+        .page-particles::after {
+            top: 70%;
+            left: 80%;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-color);
+            animation-delay: 2s;
+            animation-duration: 25s;
+        }
+        
+        @keyframes float-particle {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 50px) rotate(90deg); }
+            50% { transform: translate(50px, 100px) rotate(180deg); }
+            75% { transform: translate(-50px, 50px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        /* Header Decoration */
+        .header-decoration {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="20" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 20 L0 10 C20 0, 30 20, 50 10 C70 0, 80 20, 100 10 L100 20 Z" fill="white"/></svg>');
+            background-size: 100px 20px;
+            background-repeat: repeat-x;
+        }
+        
+        /* Dashboard Welcome */
+        .dashboard-welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-message {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+        
+        .last-update {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #999;
+        }
+        
+        /* Stat Trend */
+        .stat-trend {
+            font-size: 13px;
+            color: #999;
+            margin-top: 10px;
+        }
+        
+        .stat-trend i {
+            color: var(--success-color);
+            margin-right: 5px;
+        }
+        
+        .stat-trend span {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+        
+        .stat-trend.negative i,
+        .stat-trend.negative span {
+            color: var(--danger-color);
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-action-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .quick-action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border-color: var(--primary-light);
+        }
+        
+        .quick-action-btn i {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .quick-action-btn span {
+            font-size: 13px;
+            color: var(--dark-color);
+        }
+        
+        /* View Controls */
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .view-mode {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-btn {
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .view-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .view-btn:hover:not(.active) {
+            background: #f9f9f9;
+            border-color: #ddd;
+        }
+        
+        .sort-filter {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .sort-select {
+            padding: 10px 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .filter-btn {
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover {
+            background: #f9f9f9;
+            border-color: #ddd;
+        }
+        
+        /* Table Pagination */
+        .table-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .pagination-btn {
+            padding: 10px 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .pagination-btn:not(:disabled):hover {
+            background: var(--primary-dark);
+        }
+        
+        .pagination-info {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Animated Loader */
+        .animated-loader {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .animated-loader svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .loader-circle {
+            stroke-dasharray: 250;
+            stroke-dashoffset: 250;
+            transform-origin: center;
+            animation: loader-animation 2s linear infinite;
+        }
+        
+        @keyframes loader-animation {
+            0% {
+                stroke-dashoffset: 250;
+                transform: rotate(0deg);
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -250;
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Grid View */
+        .tenants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .tenant-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tenant-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tenant-card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+        
+        .tenant-card-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0 auto 10px;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tenant-card-name {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .tenant-card-room {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .tenant-card-body {
+            padding: 20px;
+        }
+        
+        .tenant-card-info {
+            margin-bottom: 15px;
+        }
+        
+        .tenant-card-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .tenant-card-info-item i {
+            width: 20px;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .tenant-card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .tenant-card-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .tenant-card-btn.edit {
+            background: var(--accent-color);
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .tenant-card-btn.delete {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        /* Button Effect */
+        .button-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .back-button:hover .button-effect {
+            width: 200px;
+            height: 200px;
+        }
+        
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .search-suggestions.active {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-suggestion-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .search-suggestion-avatar {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-light);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .search-suggestion-info {
+            flex: 1;
+        }
+        
+        .search-suggestion-name {
+            font-weight: 500;
+        }
+        
+        .search-suggestion-room {
+            font-size: 12px;
+            color: #777;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .dashboard-welcome {
+                flex-direction: column;
+            }
+            
+            .welcome-message {
+                margin-top: 15px;
+                max-width: 100%;
+            }
+            
+            .view-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .sort-filter {
+                width: 100%;
+            }
+            
+            .sort-select {
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                margin: 20px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .search-wrapper {
+                margin-right: 0;
+                margin-bottom: 15px;
+                width: 100%;
+            }
+            
+            .add-button {
+                width: 100%;
+            }
+            
+            .quick-action-buttons {
+                justify-content: space-between;
+            }
+            
+            .quick-action-btn {
+                min-width: calc(50% - 10px);
+            }
+            
+            .table-pagination {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            width: 50%;
+            max-width: 650px;
+            position: relative;
+            animation: modalFadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-top: 5px solid var(--primary-color);
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-70px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .modal-animate-in {
+            animation: modalFadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        
+        .modal-animate-out {
+            animation: modalFadeOut 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+        
+        @keyframes modalFadeOut {
+            from {opacity: 1; transform: translateY(0);}
+            to {opacity: 0; transform: translateY(-50px);}
+        }
+        
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .modal h2 {
+            color: var(--primary-dark);
+            font-size: 24px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        
+        .modal h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+        
+        .close {
+            position: absolute;
+            right: 25px;
+            top: 20px;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close:hover {
+            color: var(--secondary-color);
+            background-color: #f8f8f8;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 15px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+            background-color: #f9f9f9;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 194, 194, 0.15);
+            background-color: white;
+        }
+        
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 35px;
+        }
+        
+        .submit-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 194, 194, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 8px 20px rgba(0, 194, 194, 0.3);
+        }
+        
+        .cancel-button {
+            background-color: #f1f1f1;
+            color: var(--dark-color);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cancel-button:hover {
+            background-color: #e5e5e5;
+            transform: translateY(-3px);
+        }
+        
+        .delete-button {
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .delete-button:hover {
+            background: linear-gradient(135deg, var(--secondary-dark), var(--secondary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* Search Container Styles */
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-container::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            transition: all 0.7s ease;
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+        
+        .search-container:hover::before {
+            top: 100%;
+            left: 100%;
+        }
+        
+        .search-container:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            margin-right: 25px;
+            z-index: 2;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #searchInput:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 5px 20px rgba(0, 194, 194, 0.15);
+            padding-left: 55px;
+        }
+        
+        #searchInput:focus + .search-icon {
+            transform: translateY(-50%) scale(1.2);
+            color: var(--primary-dark);
+        }
+        
+        .add-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0, 194, 194, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+        
+        .add-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            z-index: -1;
+        }
+        
+        .add-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 15px 30px rgba(0, 194, 194, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .add-button:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 5px 10px rgba(0, 194, 194, 0.2);
+        }
+        
+        .add-button i {
+            transition: all 0.3s ease;
+        }
+        
+        .add-button:hover i {
+            transform: rotate(90deg);
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            perspective: 1000px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card:hover::before {
+            opacity: 0.05;
+        }
+        
+        .stat-card:nth-child(1) {
+            border-top: 5px solid var(--primary-color);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-top: 5px solid var(--accent-color);
+        }
+        
+        .stat-card:nth-child(3) {
+            border-top: 5px solid var(--secondary-color);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: white;
+            background: var(--primary-color);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 194, 194, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card .stat-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            top: -50%;
+            left: -50%;
+        }
+        
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .stat-card:nth-child(2) .stat-icon {
+            background: var(--accent-color);
+            box-shadow: 0 10px 20px rgba(255, 190, 11, 0.2);
+        }
+        
+        .stat-card:nth-child(3) .stat-icon {
+            background: var(--secondary-color);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
+        }
+        
+        .stat-card .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .stat-card:hover .stat-value {
+            transform: scale(1.1);
+            color: var(--primary-dark);
+        }
+        
+        .stat-card:nth-child(2):hover .stat-value {
+            color: var(--accent-dark);
+        }
+        
+        .stat-card:nth-child(3):hover .stat-value {
+            color: var(--secondary-dark);
+        }
+        
+        .stat-card .stat-label {
+            font-size: 15px;
+            color: #777;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .stat-card .stat-label::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .stat-card:nth-child(2) .stat-label::after {
+            background: var(--accent-color);
+        }
+        
+        .stat-card:nth-child(3) .stat-label::after {
+            background: var(--secondary-color);
+        }
+        
+        .stat-card:hover .stat-label::after {
+            width: 70px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-particles"></div>
+    
+    <header>
+        <i class="fas fa-users-cog"></i> Manage Tenants
+        <div class="header-decoration"></div>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard-welcome">
+            <h1 class="page-title">Tenant Management Dashboard</h1>
+            <div class="welcome-message">
+                <p>Welcome to the tenant management system. Here you can manage all your tenants in one place.</p>
+                <div class="last-update">Last updated: <span id="lastUpdateTime">Just now</span></div>
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalTenants">0</div>
+                <div class="stat-label">Total Tenants</div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i> <span>5%</span> from last month
+                </div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-icon">
+                    <i class="fas fa-door-open"></i>
+                </div>
+                <div class="stat-value" id="occupiedRooms">0</div>
+                <div class="stat-label">Occupied Rooms</div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up"></i> <span>3%</span> from last month
+                </div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="stat-value" id="newTenants">0</div>
+                <div class="stat-label">New This Month</div>
+                <div class="stat-trend positive">
+                    <i class="fas fa-arrow-up"></i> <span>12%</span> from last month
+                </div>
+            </div>
+        </div>
+        
+
+        
+        <div class="view-controls">
+            <div class="view-mode">
+                <button class="view-btn active" data-view="table">
+                    <i class="fas fa-table"></i> Table View
+                </button>
+                <button class="view-btn" data-view="grid">
+                    <i class="fas fa-th"></i> Grid View
+                </button>
+            </div>
+            <div class="sort-filter">
+                <select id="sortSelect" class="sort-select">
+                    <option value="name">Sort by Name</option>
+                    <option value="roomNumber">Sort by Room</option>
+                    <option value="joinDate">Sort by Join Date</option>
+                </select>
+                <button class="filter-btn" id="filterBtn">
+                    <i class="fas fa-filter"></i> Filters
+                </button>
+            </div>
+        </div>
+        
+        <div id="tenantsTableContainer" data-aos="fade-up" data-aos-delay="100">
+            <div class="table-loader" id="tableLoader">
+                <div class="loader-spinner"></div>
+                <p>Loading tenant data...</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-id-card"></i> Tenant ID</th>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th><i class="fas fa-phone"></i> Contact</th>
+                        <th><i class="fas fa-home"></i> Room Number</th>
+                        <th><i class="fas fa-cogs"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tenantsTableBody">
+                    <!-- Tenant rows will be loaded dynamically -->
+                    <tr>
+                        <td colspan="5" style="text-align: center;">
+                            <div style="display: flex; flex-direction: column; align-items: center; padding: 40px;">
+                                <div class="animated-loader">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40" stroke="var(--primary-light)" stroke-width="8" fill="none" />
+                                        <circle class="loader-circle" cx="50" cy="50" r="40" stroke="var(--primary-color)" stroke-width="8" fill="none" />
+                                    </svg>
+                                </div>
+                                <p style="font-size: 16px; color: #666; margin-top: 20px;">Loading tenants...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="table-pagination">
+                <button class="pagination-btn" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="pagination-info">
+                    Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                </div>
+                <button class="pagination-btn" id="nextPage" disabled>
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="tenantsGridContainer" class="tenants-grid" style="display: none;">
+            <!-- Grid view will be populated dynamically -->
+        </div>
+        
+        <a href="admin dashboard.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+            <span class="button-effect"></span>
+        </a>
+    </div>
+    
+    <!-- Add Tenant Modal -->
+    <div id="addTenantModal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2><i class="fas fa-user-plus"></i> Add New Tenant</h2>
+            <form id="addTenantForm">
+                <div class="form-group">
+                    <label for="tenantName"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="tenantName" placeholder="Enter tenant's full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="tenantEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="tenantEmail" placeholder="Enter tenant's email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="tenantPhone"><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="tenantPhone" placeholder="Enter tenant's phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="tenantRoom"><i class="fas fa-home"></i> Room Number</label>
+                    <input type="text" id="tenantRoom" placeholder="Enter assigned room number" required>
+                </div>
+                <div class="form-group">
+                    <label for="tenantJoinDate"><i class="fas fa-calendar-alt"></i> Join Date</label>
+                    <input type="date" id="tenantJoinDate" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="cancel-button"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="submit" class="submit-button"><i class="fas fa-check"></i> Add Tenant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Tenant Modal -->
+    <div id="editTenantModal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2><i class="fas fa-user-edit"></i> Edit Tenant</h2>
+            <form id="editTenantForm">
+                <input type="hidden" id="editTenantId">
+                <div class="form-group">
+                    <label for="editTenantName"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="editTenantName" placeholder="Enter tenant's full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTenantEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="editTenantEmail" placeholder="Enter tenant's email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTenantPhone"><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="editTenantPhone" placeholder="Enter tenant's phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTenantRoom"><i class="fas fa-home"></i> Room Number</label>
+                    <input type="text" id="editTenantRoom" placeholder="Enter assigned room number" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTenantJoinDate"><i class="fas fa-calendar-alt"></i> Join Date</label>
+                    <input type="date" id="editTenantJoinDate" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="cancel-button"><i class="fas fa-times"></i> Cancel</button>
+                    <button type="submit" class="submit-button"><i class="fas fa-save"></i> Update Tenant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteTenantModal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h2>
+            <p style="margin-bottom: 20px; line-height: 1.6; color: #555; font-size: 16px;">
+                <i class="fas fa-info-circle" style="color: var(--secondary-color); margin-right: 10px;"></i>
+                Are you sure you want to delete this tenant? This action cannot be undone and all associated data will be permanently removed.
+            </p>
+            <div class="form-buttons">
+                <button type="button" class="cancel-button"><i class="fas fa-times"></i> Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="delete-button"><i class="fas fa-trash-alt"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is authenticated
+           
+            
+            // Check if user has admin role
+           
+            
+            // Initialize UI
+            initializeUI();
+            
+            // Load tenants from backend
+            await loadTenants();
+        });
+        
+        // DOM Elements
+        const tenantsTableBody = document.getElementById('tenantsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const addTenantBtn = document.getElementById('addTenantBtn');
+        const addTenantModal = document.getElementById('addTenantModal');
+        const editTenantModal = document.getElementById('editTenantModal');
+        const deleteTenantModal = document.getElementById('deleteTenantModal');
+        const addTenantForm = document.getElementById('addTenantForm');
+        const editTenantForm = document.getElementById('editTenantForm');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        
+        // Tenants data
+        let tenants = [];
+        let currentTenantId = null;
+        
+        // Initialize UI
+        function initializeUI() {
+            // Modal close buttons
+            const closeButtons = document.querySelectorAll('.close, .cancel-button');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    addTenantModal.style.display = 'none';
+                    editTenantModal.style.display = 'none';
+                    deleteTenantModal.style.display = 'none';
+                });
+            });
+            
+            // Add tenant button
+            addTenantBtn.addEventListener('click', () => {
+                addTenantForm.reset();
+                addTenantModal.style.display = 'block';
+            });
+            
+            // Add tenant form submit
+            addTenantForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await addTenant();
+            });
+            
+            // Edit tenant form submit
+            editTenantForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateTenant();
+            });
+            
+            // Confirm delete button
+            confirmDeleteBtn.addEventListener('click', async () => {
+                await deleteTenant();
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                filterTenants(searchTerm);
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === addTenantModal) {
+                    addTenantModal.style.display = 'none';
+                }
+                if (e.target === editTenantModal) {
+                    editTenantModal.style.display = 'none';
+                }
+                if (e.target === deleteTenantModal) {
+                    deleteTenantModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Load tenants from backend
+        async function loadTenants() {
+            try {
+                // Show loading state
+                tenantsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">
+                            <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; 
+                                 border-top: 3px solid #00fcfc; border-radius: 50%; 
+                                 animation: spin 1s linear infinite;"></div>
+                            <p style="margin-top: 10px;">Loading tenants...</p>
+                        </td>
+                    </tr>
+                `;
+                
+                // Add animation style
+                const styleElement = document.createElement('style');
+                styleElement.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(styleElement);
+                
+                // Fetch tenants from backend using API
+                tenants = await api.getTenants();
+                renderTenants();
+            } catch (error) {
+                console.error('Error loading tenants:', error);
+                
+                // Show error message
+                tenantsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: red;">
+                            Failed to load tenants. Please try again later.
+                            <button onclick="loadTenants()" style="margin-top: 10px; padding: 5px 10px;">
+                                Retry
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Load sample data for demonstration
+                setTimeout(() => {
+                    loadSampleTenants();
+                }, 3000);
+            }
+        }
+        
+        // Render tenants table
+        function renderTenants() {
+            // Update stats
+            updateStats();
+            
+            if (tenants.length === 0) {
+                tenantsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px 20px;">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <i class="fas fa-users-slash" style="font-size: 50px; color: #ddd; margin-bottom: 20px;"></i>
+                                <p style="font-size: 18px; color: #666; margin-bottom: 15px;">No tenants found</p>
+                                <p style="font-size: 14px; color: #999;">Add a new tenant to get started</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tenantsTableBody.innerHTML = '';
+            
+            tenants.forEach(tenant => {
+                const row = document.createElement('tr');
+                
+                // Format join date for display
+                const joinDate = new Date(tenant.joinDate);
+                const formattedDate = joinDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                // Check if tenant is new (joined within last 30 days)
+                const isNew = (new Date() - joinDate) / (1000 * 60 * 60 * 24) < 30;
+                
+                row.innerHTML = `
+                    <td>${tenant.id}</td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-light); color: white; 
+                                 border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                                 margin-right: 10px; font-weight: bold;">
+                                ${tenant.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                ${tenant.name}
+                                ${isNew ? '<span style="background-color: var(--accent-color); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: 8px;">NEW</span>' : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column;">
+                            <span><i class="fas fa-phone" style="color: var(--primary-color); margin-right: 5px;"></i> ${tenant.phone}</span>
+                            <span style="font-size: 12px; color: #777; margin-top: 5px;"><i class="fas fa-envelope" style="margin-right: 5px;"></i> ${tenant.email}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <span style="font-weight: bold; font-size: 18px; color: var(--primary-dark);">${tenant.roomNumber}</span>
+                            <span style="font-size: 12px; color: #777; margin-top: 5px;">Since ${formattedDate}</span>
+                        </div>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="edit" data-id="${tenant.id}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="delete" data-id="${tenant.id}"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </td>
+                `;
+                
+                tenantsTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.edit').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tenantId = button.getAttribute('data-id');
+                    openEditModal(tenantId);
+                });
+            });
+            
+            document.querySelectorAll('.delete').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tenantId = button.getAttribute('data-id');
+                    openDeleteModal(tenantId);
+                });
+            });
+        }
+        
+        // Update stats
+        function updateStats() {
+            const totalTenants = tenants.length;
+            document.getElementById('totalTenants').textContent = totalTenants;
+            
+            // Count unique rooms
+            const uniqueRooms = new Set(tenants.map(tenant => tenant.roomNumber)).size;
+            document.getElementById('occupiedRooms').textContent = uniqueRooms;
+            
+            // Count new tenants (joined within last 30 days)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const newTenantsCount = tenants.filter(tenant => {
+                const joinDate = new Date(tenant.joinDate);
+                return joinDate >= thirtyDaysAgo;
+            }).length;
+            
+            document.getElementById('newTenants').textContent = newTenantsCount;
+        }
+        
+        // Filter tenants by search term
+        function filterTenants(searchTerm) {
+            if (!searchTerm) {
+                renderTenants();
+                return;
+            }
+            
+            const filteredTenants = tenants.filter(tenant => {
+                return tenant.name.toLowerCase().includes(searchTerm) || 
+                       tenant.phone.toLowerCase().includes(searchTerm) || 
+                       tenant.roomNumber.toLowerCase().includes(searchTerm) ||
+                       tenant.email.toLowerCase().includes(searchTerm);
+            });
+            
+            // Update stats based on filtered results
+            document.getElementById('totalTenants').textContent = filteredTenants.length;
+            
+            // Count unique rooms in filtered results
+            const uniqueRooms = new Set(filteredTenants.map(tenant => tenant.roomNumber)).size;
+            document.getElementById('occupiedRooms').textContent = uniqueRooms;
+            
+            // Count new tenants in filtered results
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const newTenantsCount = filteredTenants.filter(tenant => {
+                const joinDate = new Date(tenant.joinDate);
+                return joinDate >= thirtyDaysAgo;
+            }).length;
+            
+            document.getElementById('newTenants').textContent = newTenantsCount;
+            
+            if (filteredTenants.length === 0) {
+                tenantsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px 20px;">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <i class="fas fa-search" style="font-size: 50px; color: #ddd; margin-bottom: 20px;"></i>
+                                <p style="font-size: 18px; color: #666; margin-bottom: 15px;">No tenants found matching "${searchTerm}"</p>
+                                <p style="font-size: 14px; color: #999;">Try a different search term</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tenantsTableBody.innerHTML = '';
+            
+            filteredTenants.forEach(tenant => {
+                const row = document.createElement('tr');
+                
+                // Format join date for display
+                const joinDate = new Date(tenant.joinDate);
+                const formattedDate = joinDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                // Check if tenant is new (joined within last 30 days)
+                const isNew = (new Date() - joinDate) / (1000 * 60 * 60 * 24) < 30;
+                
+                // Highlight the matching text
+                let highlightedName = tenant.name;
+                let highlightedPhone = tenant.phone;
+                let highlightedRoom = tenant.roomNumber;
+                let highlightedEmail = tenant.email;
+                
+                if (tenant.name.toLowerCase().includes(searchTerm)) {
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    highlightedName = tenant.name.replace(regex, '<span style="background-color: #ffff00; font-weight: bold;">$1</span>');
+                }
+                
+                if (tenant.phone.toLowerCase().includes(searchTerm)) {
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    highlightedPhone = tenant.phone.replace(regex, '<span style="background-color: #ffff00; font-weight: bold;">$1</span>');
+                }
+                
+                if (tenant.roomNumber.toLowerCase().includes(searchTerm)) {
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    highlightedRoom = tenant.roomNumber.replace(regex, '<span style="background-color: #ffff00; font-weight: bold;">$1</span>');
+                }
+                
+                if (tenant.email.toLowerCase().includes(searchTerm)) {
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    highlightedEmail = tenant.email.replace(regex, '<span style="background-color: #ffff00; font-weight: bold;">$1</span>');
+                }
+                
+                row.innerHTML = `
+                    <td>${tenant.id}</td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-light); color: white; 
+                                 border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+                                 margin-right: 10px; font-weight: bold;">
+                                ${tenant.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                ${highlightedName}
+                                ${isNew ? '<span style="background-color: var(--accent-color); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: 8px;">NEW</span>' : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column;">
+                            <span><i class="fas fa-phone" style="color: var(--primary-color); margin-right: 5px;"></i> ${highlightedPhone}</span>
+                            <span style="font-size: 12px; color: #777; margin-top: 5px;"><i class="fas fa-envelope" style="margin-right: 5px;"></i> ${highlightedEmail}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <span style="font-weight: bold; font-size: 18px; color: var(--primary-dark);">${highlightedRoom}</span>
+                            <span style="font-size: 12px; color: #777; margin-top: 5px;">Since ${formattedDate}</span>
+                        </div>
+                    </td>
+                    <td class="action-buttons">
+                        <button class="edit" data-id="${tenant.id}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="delete" data-id="${tenant.id}"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </td>
+                `;
+                
+                tenantsTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.edit').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tenantId = button.getAttribute('data-id');
+                    openEditModal(tenantId);
+                });
+            });
+            
+            document.querySelectorAll('.delete').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tenantId = button.getAttribute('data-id');
+                    openDeleteModal(tenantId);
+                });
+            });
+            
+            // Show search feedback
+            showNotification(`Found ${filteredTenants.length} tenant(s) matching "${searchTerm}"`, 'info');
+        }
+        
+        // Open edit modal
+        function openEditModal(tenantId) {
+            const tenant = tenants.find(t => t.id === tenantId);
+            if (!tenant) return;
+            
+            document.getElementById('editTenantId').value = tenant.id;
+            document.getElementById('editTenantName').value = tenant.name;
+            document.getElementById('editTenantEmail').value = tenant.email;
+            document.getElementById('editTenantPhone').value = tenant.phone;
+            document.getElementById('editTenantRoom').value = tenant.roomNumber;
+            document.getElementById('editTenantJoinDate').value = tenant.joinDate;
+            
+            editTenantModal.style.display = 'block';
+        }
+        
+        // Open delete modal
+        function openDeleteModal(tenantId) {
+            currentTenantId = tenantId;
+            deleteTenantModal.style.display = 'block';
+        }
+        
+        // Add new tenant
+        async function addTenant() {
+            const name = document.getElementById('tenantName').value;
+            const email = document.getElementById('tenantEmail').value;
+            const phone = document.getElementById('tenantPhone').value;
+            const roomNumber = document.getElementById('tenantRoom').value;
+            const joinDate = document.getElementById('tenantJoinDate').value;
+            
+            const newTenant = {
+                name,
+                email,
+                phone,
+                roomNumber,
+                joinDate
+            };
+            
+            try {
+                // Send request to backend using API
+                const addedTenant = await api.addTenant(newTenant);
+                tenants.push(addedTenant);
+                renderTenants();
+                addTenantModal.style.display = 'none';
+                showNotification('Tenant added successfully', 'success');
+            } catch (error) {
+                console.error('Error adding tenant:', error);
+                showNotification('Failed to add tenant', 'error');
+                
+                // For demonstration, add tenant locally
+                const newId = Math.max(...tenants.map(t => parseInt(t.id)), 0) + 1;
+                const addedTenant = {
+                    id: newId.toString(),
+                    ...newTenant
+                };
+                tenants.push(addedTenant);
+                renderTenants();
+                addTenantModal.style.display = 'none';
+                showNotification('Tenant added successfully (demo mode)', 'success');
+            }
+        }
+        
+        // Update tenant
+        async function updateTenant() {
+            const id = document.getElementById('editTenantId').value;
+            const name = document.getElementById('editTenantName').value;
+            const email = document.getElementById('editTenantEmail').value;
+            const phone = document.getElementById('editTenantPhone').value;
+            const roomNumber = document.getElementById('editTenantRoom').value;
+            const joinDate = document.getElementById('editTenantJoinDate').value;
+            
+            const updatedTenant = {
+                id,
+                name,
+                email,
+                phone,
+                roomNumber,
+                joinDate
+            };
+            
+            try {
+                // Send request to backend using API
+                await api.updateTenant(id, updatedTenant);
+                
+                const index = tenants.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    tenants[index] = updatedTenant;
+                }
+                renderTenants();
+                editTenantModal.style.display = 'none';
+                showNotification('Tenant updated successfully', 'success');
+            } catch (error) {
+                console.error('Error updating tenant:', error);
+                showNotification('Failed to update tenant', 'error');
+                
+                // For demonstration, update tenant locally
+                const index = tenants.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    tenants[index] = updatedTenant;
+                }
+                renderTenants();
+                editTenantModal.style.display = 'none';
+                showNotification('Tenant updated successfully (demo mode)', 'success');
+            }
+        }
+        
+        // Delete tenant
+        async function deleteTenant() {
+            if (!currentTenantId) return;
+            
+            try {
+                // Send request to backend using API
+                await api.deleteTenant(currentTenantId);
+                
+                tenants = tenants.filter(t => t.id !== currentTenantId);
+                renderTenants();
+                deleteTenantModal.style.display = 'none';
+                showNotification('Tenant deleted successfully', 'success');
+            } catch (error) {
+                console.error('Error deleting tenant:', error);
+                showNotification('Failed to delete tenant', 'error');
+                
+                // For demonstration, delete tenant locally
+                tenants = tenants.filter(t => t.id !== currentTenantId);
+                renderTenants();
+                deleteTenantModal.style.display = 'none';
+                showNotification('Tenant deleted successfully (demo mode)', 'success');
+            } finally {
+                currentTenantId = null;
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            // Remove any existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => {
+                notification.remove();
+            });
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Set icon based on type
+            let icon = 'info-circle';
+            if (type === 'success') {
+                icon = 'check-circle';
+            } else if (type === 'error') {
+                icon = 'exclamation-circle';
+            } else if (type === 'warning') {
+                icon = 'exclamation-triangle';
+            }
+            
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Style the notification
+            notification.style.position = 'fixed';
+            notification.style.bottom = '30px';
+            notification.style.right = '30px';
+            notification.style.padding = '0';
+            notification.style.borderRadius = '10px';
+            notification.style.color = 'white';
+            notification.style.zIndex = '1000';
+            notification.style.boxShadow = '0 5px 20px rgba(0,0,0,0.2)';
+            notification.style.display = 'flex';
+            notification.style.alignItems = 'stretch';
+            notification.style.minWidth = '350px';
+            notification.style.maxWidth = '450px';
+            notification.style.overflow = 'hidden';
+            notification.style.animation = 'slideInRight 0.5s forwards';
+            
+            // Set background color based on type
+            if (type === 'success') {
+                notification.style.backgroundColor = 'var(--success-color)';
+                notification.style.borderLeft = '5px solid #1e7e34';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = 'var(--danger-color)';
+                notification.style.borderLeft = '5px solid #bd2130';
+            } else if (type === 'warning') {
+                notification.style.backgroundColor = 'var(--warning-color)';
+                notification.style.borderLeft = '5px solid #d39e00';
+                notification.style.color = '#333';
+            } else {
+                notification.style.backgroundColor = 'var(--primary-color)';
+                notification.style.borderLeft = '5px solid var(--primary-dark)';
+            }
+            
+            // Style the icon
+            const iconDiv = notification.querySelector('.notification-icon');
+            iconDiv.style.padding = '20px';
+            iconDiv.style.fontSize = '24px';
+            iconDiv.style.display = 'flex';
+            iconDiv.style.alignItems = 'center';
+            iconDiv.style.justifyContent = 'center';
+            
+            // Style the content
+            const contentDiv = notification.querySelector('.notification-content');
+            contentDiv.style.padding = '15px 10px';
+            contentDiv.style.flexGrow = '1';
+            
+            // Style the title
+            const titleDiv = notification.querySelector('.notification-title');
+            titleDiv.style.fontWeight = 'bold';
+            titleDiv.style.marginBottom = '5px';
+            
+            // Style the message
+            const messageDiv = notification.querySelector('.notification-message');
+            messageDiv.style.fontSize = '14px';
+            messageDiv.style.opacity = '0.9';
+            
+            // Style the close button
+            const closeButton = notification.querySelector('.notification-close');
+            closeButton.style.background = 'none';
+            closeButton.style.border = 'none';
+            closeButton.style.color = 'inherit';
+            closeButton.style.padding = '15px';
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.opacity = '0.7';
+            closeButton.style.transition = 'opacity 0.3s';
+            
+            closeButton.addEventListener('mouseover', () => {
+                closeButton.style.opacity = '1';
+            });
+            
+            closeButton.addEventListener('mouseout', () => {
+                closeButton.style.opacity = '0.7';
+            });
+            
+            closeButton.addEventListener('click', () => {
+                notification.style.animation = 'slideOutRight 0.5s forwards';
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            });
+            
+            // Add animation styles
+            const styleElement = document.createElement('style');
+            styleElement.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                
+                @keyframes slideOutRight {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(styleElement);
+            
+            // Add to document
+            document.body.appendChild(notification);
+            
+            // Remove after 5 seconds
+            const timeout = setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.5s forwards';
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            }, 5000);
+            
+            // Pause timeout on hover
+            notification.addEventListener('mouseenter', () => {
+                clearTimeout(timeout);
+            });
+            
+            // Resume timeout on mouse leave
+            notification.addEventListener('mouseleave', () => {
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.5s forwards';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 500);
+                }, 5000);
+            });
+        }
+        
+        // Load sample tenants for demonstration
+        function loadSampleTenants() {
+            // Get current date for recent tenants
+            const today = new Date();
+            
+            // Create a date 15 days ago for "new" tenants
+            const recentDate = new Date();
+            recentDate.setDate(today.getDate() - 15);
+            const recentDateStr = recentDate.toISOString().split('T')[0];
+            
+            // Create a date 5 days ago for "very new" tenants
+            const veryRecentDate = new Date();
+            veryRecentDate.setDate(today.getDate() - 5);
+            const veryRecentDateStr = veryRecentDate.toISOString().split('T')[0];
+            
+            tenants = [
+                {
+                    id: '1',
+                    name: 'John Doe',
+                    email: 'john.doe@example.com',
+                    phone: '123-456-7890',
+                    roomNumber: '101',
+                    joinDate: '2023-01-15'
+                },
+                {
+                    id: '2',
+                    name: 'Jane Smith',
+                    email: 'jane.smith@example.com',
+                    phone: '987-654-3210',
+                    roomNumber: '202',
+                    joinDate: '2023-02-20'
+                },
+                {
+                    id: '3',
+                    name: 'Michael Johnson',
+                    email: 'michael.j@example.com',
+                    phone: '555-123-4567',
+                    roomNumber: '303',
+                    joinDate: '2023-03-10'
+                },
+                {
+                    id: '4',
+                    name: 'Sarah Williams',
+                    email: 'sarah.w@example.com',
+                    phone: '444-555-6666',
+                    roomNumber: '104',
+                    joinDate: '2023-04-05'
+                },
+                {
+                    id: '5',
+                    name: 'Robert Chen',
+                    email: 'robert.chen@example.com',
+                    phone: '333-222-1111',
+                    roomNumber: '205',
+                    joinDate: recentDateStr
+                },
+                {
+                    id: '6',
+                    name: 'Emily Davis',
+                    email: 'emily.davis@example.com',
+                    phone: '777-888-9999',
+                    roomNumber: '306',
+                    joinDate: veryRecentDateStr
+                },
+                {
+                    id: '7',
+                    name: 'David Wilson',
+                    email: 'david.wilson@example.com',
+                    phone: '111-222-3333',
+                    roomNumber: '107',
+                    joinDate: '2023-05-12'
+                },
+                {
+                    id: '8',
+                    name: 'Olivia Martinez',
+                    email: 'olivia.m@example.com',
+                    phone: '666-777-8888',
+                    roomNumber: '208',
+                    joinDate: '2023-06-25'
+                }
+            ];
+            
+            renderTenants();
+            showNotification('Sample data loaded successfully', 'success');
+        }
+        
+        // Create page particles
+        function createPageParticles() {
+            const particlesContainer = document.querySelector('.page-particles');
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                
+                // Random color
+                const colors = [
+                    'rgba(0, 194, 194, 0.2)',
+                    'rgba(255, 190, 11, 0.2)',
+                    'rgba(255, 107, 107, 0.2)'
+                ];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random animation duration
+                const duration = Math.random() * 20 + 10;
+                
+                // Random animation delay
+                const delay = Math.random() * 10;
+                
+                // Apply styles
+                particle.style.cssText = `
+                    position: absolute;
+                    top: ${posY}%;
+                    left: ${posX}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background-color: ${color};
+                    border-radius: 50%;
+                    animation: float-particle ${duration}s ${delay}s infinite linear;
+                    opacity: ${Math.random() * 0.5 + 0.1};
+                `;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Update last update time
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdateTime').textContent = timeString;
+        }
+        
+        // Show search suggestions
+        function showSearchSuggestions(searchTerm) {
+            const suggestionsContainer = document.getElementById('searchSuggestions');
+            suggestionsContainer.innerHTML = '';
+            
+            const filteredTenants = tenants.filter(tenant => {
+                return tenant.name.toLowerCase().includes(searchTerm) || 
+                       tenant.phone.toLowerCase().includes(searchTerm) || 
+                       tenant.roomNumber.toLowerCase().includes(searchTerm) ||
+                       tenant.email.toLowerCase().includes(searchTerm);
+            });
+            
+            if (filteredTenants.length > 0) {
+                suggestionsContainer.classList.add('active');
+                
+                filteredTenants.slice(0, 5).forEach(tenant => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'search-suggestion-item';
+                    
+                    suggestionItem.innerHTML = `
+                        <div class="search-suggestion-avatar">${tenant.name.charAt(0).toUpperCase()}</div>
+                        <div class="search-suggestion-info">
+                            <div class="search-suggestion-name">${tenant.name}</div>
+                            <div class="search-suggestion-room">Room ${tenant.roomNumber}</div>
+                        </div>
+                    `;
+                    
+                    suggestionItem.addEventListener('click', () => {
+                        document.getElementById('searchInput').value = tenant.name;
+                        hideSearchSuggestions();
+                        filterTenants(tenant.name.toLowerCase());
+                    });
+                    
+                    suggestionsContainer.appendChild(suggestionItem);
+                });
+                
+                if (filteredTenants.length > 5) {
+                    const moreResults = document.createElement('div');
+                    moreResults.className = 'search-suggestion-item';
+                    moreResults.innerHTML = `
+                        <div style="text-align: center; width: 100%; color: var(--primary-color);">
+                            + ${filteredTenants.length - 5} more results
+                        </div>
+                    `;
+                    
+                    moreResults.addEventListener('click', () => {
+                        hideSearchSuggestions();
+                        filterTenants(searchTerm);
+                    });
+                    
+                    suggestionsContainer.appendChild(moreResults);
+                }
+            } else {
+                suggestionsContainer.classList.remove('active');
+            }
+            
+            // Also filter the table
+            filterTenants(searchTerm);
+        }
+        
+        // Hide search suggestions
+        function hideSearchSuggestions() {
+            const suggestionsContainer = document.getElementById('searchSuggestions');
+            suggestionsContainer.classList.remove('active');
+        }
+        
+        // Export tenants data
+        function exportTenantsData() {
+            // Create CSV content
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Name,Email,Phone,Room Number,Join Date\n";
+            
+            tenants.forEach(tenant => {
+                csvContent += `${tenant.id},${tenant.name},${tenant.email},${tenant.phone},${tenant.roomNumber},${tenant.joinDate}\n`;
+            });
+            
+            // Create download link
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "tenants_data.csv");
+            document.body.appendChild(link);
+            
+            // Trigger download
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('Tenants data exported successfully', 'success');
+        }
+        
+        // Print tenants list
+        function printTenantsList() {
+            // Create a printable version
+            const printWindow = window.open('', '_blank');
+            
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Tenants List</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                        }
+                        h1 {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 10px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                        }
+                        .print-date {
+                            text-align: right;
+                            margin-bottom: 20px;
+                            font-size: 12px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Tenants List</h1>
+                    <div class="print-date">Printed on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Room Number</th>
+                                <th>Join Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `);
+            
+            tenants.forEach(tenant => {
+                const joinDate = new Date(tenant.joinDate).toLocaleDateString();
+                printWindow.document.write(`
+                    <tr>
+                        <td>${tenant.id}</td>
+                        <td>${tenant.name}</td>
+                        <td>${tenant.email}</td>
+                        <td>${tenant.phone}</td>
+                        <td>${tenant.roomNumber}</td>
+                        <td>${joinDate}</td>
+                    </tr>
+                `);
+            });
+            
+            printWindow.document.write(`
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            
+            // Print after a short delay to ensure content is loaded
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+            
+            showNotification('Print preview opened', 'success');
+        }
+        
+        // Change view mode
+        function changeViewMode(mode) {
+            const tableContainer = document.getElementById('tenantsTableContainer');
+            const gridContainer = document.getElementById('tenantsGridContainer');
+            
+            if (mode === 'table') {
+                tableContainer.style.display = 'block';
+                gridContainer.style.display = 'none';
+            } else if (mode === 'grid') {
+                tableContainer.style.display = 'none';
+                gridContainer.style.display = 'grid';
+                renderGridView();
+            }
+        }
+        
+        // Render grid view
+        function renderGridView() {
+            const gridContainer = document.getElementById('tenantsGridContainer');
+            gridContainer.innerHTML = '';
+            
+            if (tenants.length === 0) {
+                gridContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <i class="fas fa-users-slash" style="font-size: 50px; color: #ddd; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px; color: #666; margin-bottom: 15px;">No tenants found</p>
+                        <p style="font-size: 14px; color: #999;">Add a new tenant to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            tenants.forEach(tenant => {
+                const joinDate = new Date(tenant.joinDate);
+                const formattedDate = joinDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                const isNew = (new Date() - joinDate) / (1000 * 60 * 60 * 24) < 30;
+                
+                const tenantCard = document.createElement('div');
+                tenantCard.className = 'tenant-card';
+                
+                tenantCard.innerHTML = `
+                    <div class="tenant-card-header">
+                        <div class="tenant-card-avatar">${tenant.name.charAt(0).toUpperCase()}</div>
+                        <div class="tenant-card-name">${tenant.name}</div>
+                        <div class="tenant-card-room">Room ${tenant.roomNumber}</div>
+                    </div>
+                    <div class="tenant-card-body">
+                        <div class="tenant-card-info">
+                            <div class="tenant-card-info-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>${tenant.email}</span>
+                            </div>
+                            <div class="tenant-card-info-item">
+                                <i class="fas fa-phone"></i>
+                                <span>${tenant.phone}</span>
+                            </div>
+                            <div class="tenant-card-info-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Joined: ${formattedDate}</span>
+                            </div>
+                        </div>
+                        <div class="tenant-card-actions">
+                            <button class="tenant-card-btn edit" data-id="${tenant.id}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="tenant-card-btn delete" data-id="${tenant.id}">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                gridContainer.appendChild(tenantCard);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.tenant-card-btn.edit').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tenantId = button.getAttribute('data-id');
+                    openEditModal(tenantId);
+                });
+            });
+            
+            document.querySelectorAll('.tenant-card-btn.delete').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tenantId = button.getAttribute('data-id');
+                    openDeleteModal(tenantId);
+                });
+            });
+        }
+        
+        // Sort tenants
+        function sortTenants(sortBy) {
+            tenants.sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === 'roomNumber') {
+                    return a.roomNumber.localeCompare(b.roomNumber);
+                } else if (sortBy === 'joinDate') {
+                    return new Date(a.joinDate) - new Date(b.joinDate);
+                }
+                return 0;
+            });
+            
+            renderTenants();
+            
+            // Also update grid view if it's active
+            if (document.getElementById('tenantsGridContainer').style.display === 'grid') {
+                renderGridView();
+            }
+            
+            showNotification(`Tenants sorted by ${sortBy}`, 'info');
+        }
+        
+        // Show filter options
+        function showFilterOptions() {
+            // This would be a more complex implementation in a real app
+            showNotification('Advanced filtering coming soon!', 'info');
+        }
+        
+        // Pagination functions
+        function goToPreviousPage() {
+            // This would be implemented with actual pagination
+            showNotification('Pagination coming soon!', 'info');
+        }
+        
+        function goToNextPage() {
+            // This would be implemented with actual pagination
+            showNotification('Pagination coming soon!', 'info');
+        }
+        
+        // Show loading animation
+        function showLoadingAnimation() {
+            const tableBody = document.getElementById('tenantsTableBody');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; padding: 40px;">
+                            <div class="animated-loader">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="40" stroke="var(--primary-light)" stroke-width="8" fill="none" />
+                                    <circle class="loader-circle" cx="50" cy="50" r="40" stroke="var(--primary-color)" stroke-width="8" fill="none" />
+                                </svg>
+                            </div>
+                            <p style="font-size: 16px; color: #666; margin-top: 20px;">Refreshing data...</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        // Create ripple effect
+        function createRippleEffect(event) {
+            const button = event.currentTarget;
+            
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+            
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add('ripple');
+            
+            const ripple = button.querySelector('.ripple');
+            if (ripple) {
+                ripple.remove();
+            }
+            
+            button.appendChild(circle);
+        }
+    </script>
+</body>
+</html>

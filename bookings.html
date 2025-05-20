@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings - User Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0078D7;
+            --secondary-color: #005a9e;
+            --accent-color: #00b7c3;
+            --success-color: #107C10;
+            --warning-color: #d83b01;
+            --danger-color: #e81123;
+            --light-color: #f0f2f5;
+            --dark-color: #333;
+            --text-color: #333;
+            --text-light: #666;
+            --border-color: #ddd;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* Header and Navigation */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        nav ul li a i {
+            margin-right: 0.5rem;
+        }
+        
+        nav ul li a:hover {
+            opacity: 0.8;
+        }
+        
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-menu .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            display: none;
+            z-index: 10;
+        }
+        
+        .user-dropdown.active {
+            display: block;
+        }
+        
+        .user-dropdown ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .user-dropdown ul li {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .user-dropdown ul li a {
+            color: var(--text-color);
+            padding: 0.8rem 1rem;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        
+        .user-dropdown ul li a:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        /* Main Content */
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+        
+        .filter-dropdown {
+            position: relative;
+        }
+        
+        .filter-btn {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .filter-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            display: none;
+            z-index: 5;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0;
+        }
+        
+        .filter-menu.active {
+            display: block;
+        }
+        
+        .filter-menu label {
+            display: block;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-menu label:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .filter-menu input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        
+        /* Booking Cards */
+        .bookings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        
+        .card h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+        
+        .booking-date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .card-body {
+            flex: 1;
+        }
+        
+        .card p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card p i {
+            width: 20px;
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .status {
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+        
+        .status-confirmed {
+            background-color: #d4edda;
+            color: var(--success-color);
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: var(--warning-color);
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: var(--danger-color);
+        }
+        
+        .status-completed {
+            background-color: #e2e3e5;
+            color: var(--text-light);
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .pagination button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pagination button:hover:not(.active) {
+            background-color: #f5f5f5;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .footer-links a:hover {
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 1rem;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .mobile-menu {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                width: 250px;
+                height: 100%;
+                background-color: white;
+                z-index: 1000;
+                transition: left 0.3s;
+                box-shadow: var(--shadow);
+            }
+            
+            .mobile-menu.active {
+                left: 0;
+            }
+            
+            .mobile-menu ul {
+                flex-direction: column;
+                padding: 1rem 0;
+            }
+            
+            .mobile-menu ul li {
+                margin: 0;
+            }
+            
+            .mobile-menu ul li a {
+                color: var(--text-color);
+                padding: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .mobile-menu-close {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-filter {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            main {
+                padding: 1rem;
+            }
+            
+            .bookings-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .card-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <h1>PG Booking Dashboard</h1>
+            
+            <nav>
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="bookings.html" class="active"><i class="fas fa-calendar-check"></i> My Bookings</a></li>
+                   
+                </ul>
+                
+                <div class="user-menu" id="userMenu">
+                    <div class="avatar">JS</div>
+                    <div class="user-dropdown" id="userDropdown">
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+       
+    </header>
+
+    <main>
+        <div class="page-header">
+            <h2>Your Bookings</h2>
+            
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search bookings..." id="searchBookings">
+                </div>
+                
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="filterBtn">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <div class="filter-menu" id="filterMenu">
+                        <label>
+                            <input type="checkbox" value="confirmed" checked> Confirmed
+                        </label>
+                        <label>
+                            <input type="checkbox" value="pending" checked> Pending
+                        </label>
+                        <label>
+                            <input type="checkbox" value="cancelled"> Cancelled
+                        </label>
+                        <label>
+                            <input type="checkbox" value="completed"> Completed
+                        </label>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="newBookingBtn">
+                    <i class="fas fa-plus"></i> New Booking
+                </button>
+            </div>
+        </div>
+        
+        <div class="bookings-container">
+            <div class="card" data-status="confirmed">
+                <div class="card-header">
+                    <div>
+                        <h3>Booking ID: 12345</h3>
+                        <span class="booking-date">Booked on: Sep 15, 2023</span>
+                    </div>
+                    <span class="status status-confirmed">Confirmed</span>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-building"></i> <strong>PG Name:</strong> SV PG</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> Koramangala, Bangalore</p>
+                    <p><i class="fas fa-bed"></i> <strong>Room Type:</strong> Single Sharing</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-in:</strong> Oct 1, 2023</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-out:</strong> Dec 31, 2023</p>
+                    <p><i class="fas fa-rupee-sign"></i> <strong>Amount:</strong> ₹30,000 (₹10,000/month)</p>
+                </div>
+                <div class="card-footer">
+                    <div class="payment-info">
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Payment Completed
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Contact PG</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-status="pending">
+                <div class="card-header">
+                    <div>
+                        <h3>Booking ID: 67890</h3>
+                        <span class="booking-date">Booked on: Oct 25, 2023</span>
+                    </div>
+                    <span class="status status-pending">Pending</span>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-building"></i> <strong>PG Name:</strong> SV PG</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> HSR Layout, Bangalore</p>
+                    <p><i class="fas fa-bed"></i> <strong>Room Type:</strong> Double Sharing</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-in:</strong> Nov 15, 2023</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-out:</strong> Jan 15, 2024</p>
+                    <p><i class="fas fa-rupee-sign"></i> <strong>Amount:</strong> ₹24,000 (₹8,000/month)</p>
+                </div>
+                <div class="card-footer">
+                    <div class="payment-info">
+                        <i class="fas fa-clock" style="color: var(--warning-color);"></i> Payment Pending
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Make Payment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-status="cancelled">
+                <div class="card-header">
+                    <div>
+                        <h3>Booking ID: 54321</h3>
+                        <span class="booking-date">Booked on: Aug 5, 2023</span>
+                    </div>
+                    <span class="status status-cancelled">Cancelled</span>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-building"></i> <strong>PG Name:</strong> Green View PG</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> Whitefield, Bangalore</p>
+                    <p><i class="fas fa-bed"></i> <strong>Room Type:</strong> Single Room</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-in:</strong> Sep 1, 2023</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-out:</strong> Nov 30, 2023</p>
+                    <p><i class="fas fa-rupee-sign"></i> <strong>Amount:</strong> ₹36,000 (₹12,000/month)</p>
+                </div>
+                <div class="card-footer">
+                    <div class="payment-info">
+                        <i class="fas fa-times-circle" style="color: var(--danger-color);"></i> Booking Cancelled
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Book Again</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-status="completed">
+                <div class="card-header">
+                    <div>
+                        <h3>Booking ID: 98765</h3>
+                        <span class="booking-date">Booked on: May 10, 2023</span>
+                    </div>
+                    <span class="status status-completed">Completed</span>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-building"></i> <strong>PG Name:</strong> Comfort Stay PG</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> Indiranagar, Bangalore</p>
+                    <p><i class="fas fa-bed"></i> <strong>Room Type:</strong> Triple Sharing</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-in:</strong> Jun 1, 2023</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-out:</strong> Aug 31, 2023</p>
+                    <p><i class="fas fa-rupee-sign"></i> <strong>Amount:</strong> ₹18,000 (₹6,000/month)</p>
+                </div>
+                <div class="card-footer">
+                    <div class="payment-info">
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Stay Completed
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Write Review</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+       
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Paying Guest. All rights reserved.</p>
+        
+        </div>
+    </footer>
+    
+    <script src="js/api.js"></script>
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is authenticated
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                // Redirect to login page if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Initialize UI elements
+            initializeUI();
+            
+            // Load bookings from backend
+            await loadBookings();
+        });
+        
+        // Initialize UI elements
+        function initializeUI() {
+            // Mobile Menu Toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuClose = document.getElementById('mobileMenuClose');
+            
+            mobileMenuToggle.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+            });
+            
+            mobileMenuClose.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+            
+            // User Dropdown Toggle
+            const userMenu = document.getElementById('userMenu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            userMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+            
+            // Filter Dropdown Toggle
+            const filterBtn = document.getElementById('filterBtn');
+            const filterMenu = document.getElementById('filterMenu');
+            
+            filterBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                filterMenu.classList.toggle('active');
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', () => {
+                userDropdown.classList.remove('active');
+                filterMenu.classList.remove('active');
+            });
+            
+            // New Booking Button
+            const newBookingBtn = document.getElementById('newBookingBtn');
+            
+            newBookingBtn.addEventListener('click', () => {
+                window.location.href = 'makepayment.html';
+            });
+            
+            // Pagination
+            const paginationButtons = document.querySelectorAll('.pagination button');
+            
+            paginationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    paginationButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    if (!button.classList.contains('active') && 
+                        !button.innerHTML.includes('fa-chevron')) {
+                        button.classList.add('active');
+                    }
+                    
+                    // In a real application, you would load the appropriate page of bookings
+                    if (button.innerHTML.includes('fa-chevron-left')) {
+                        alert('Loading previous page...');
+                    } else if (button.innerHTML.includes('fa-chevron-right')) {
+                        alert('Loading next page...');
+                    } else {
+                        alert(`Loading page ${button.textContent}...`);
+                    }
+                });
+            });
+        }
+        
+        // Load bookings from backend
+        async function loadBookings() {
+            const bookingsContainer = document.querySelector('.cards-container');
+            
+            // Create loading indicator
+            const loadingElement = document.createElement('div');
+            loadingElement.className = 'loading';
+            loadingElement.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-color); 
+                         border-radius: 50%; width: 40px; height: 40px; margin: 0 auto 20px; 
+                         animation: spin 1s linear infinite;"></div>
+                    <p>Loading your bookings...</p>
+                </div>
+            `;
+            
+            // Add style for spinner animation
+            const styleElement = document.createElement('style');
+            styleElement.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(styleElement);
+            
+            // Show loading indicator
+            bookingsContainer.innerHTML = '';
+            bookingsContainer.appendChild(loadingElement);
+            
+            try {
+                // Fetch bookings from backend
+                const bookings = await api.getUserBookings();
+                
+                // Clear loading indicator
+                bookingsContainer.innerHTML = '';
+                
+                if (bookings.length === 0) {
+                    // Show message if no bookings
+                    bookingsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 30px; background: white; 
+                             border-radius: 8px; box-shadow: var(--shadow); margin: 20px 0;">
+                            <i class="fas fa-calendar-times" style="font-size: 48px; color: var(--text-light); margin-bottom: 15px;"></i>
+                            <h3>No Bookings Found</h3>
+                            <p>You haven't made any bookings yet.</p>
+                            <button id="makeFirstBookingBtn" class="btn btn-primary" style="margin-top: 15px;">
+                                Make Your First Booking
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add event listener to the button
+                    document.getElementById('makeFirstBookingBtn').addEventListener('click', () => {
+                        window.location.href = 'makepayment.html';
+                    });
+                } else {
+                    // Display bookings
+                    bookings.forEach(booking => {
+                        const bookingCard = createBookingCard(booking);
+                        bookingsContainer.appendChild(bookingCard);
+                    });
+                    
+                    // Initialize search and filter functionality
+                    initializeSearchAndFilter();
+                }
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                
+                // Show error message
+                bookingsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #721c24; 
+                         background-color: #f8d7da; border-radius: 5px; margin: 20px 0;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <h3>Failed to Load Bookings</h3>
+                        <p>We couldn't connect to the server. Please try again later.</p>
+                        <button onclick="loadBookings()" class="btn btn-primary" style="margin-top: 15px;">
+                            Retry
+                        </button>
+                    </div>
+                `;
+                
+                // Load sample data for demonstration after a delay
+                setTimeout(() => {
+                    if (bookingsContainer.querySelector('.btn-primary')) {
+                        loadSampleBookings();
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Create booking card element
+        function createBookingCard(booking) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-status', booking.status.toLowerCase());
+            
+            // Format dates
+            const bookingDate = new Date(booking.bookingDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            const checkInDate = new Date(booking.checkInDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            const checkOutDate = new Date(booking.checkOutDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            // Determine status class
+            let statusClass = '';
+            switch (booking.status.toLowerCase()) {
+                case 'confirmed':
+                    statusClass = 'status-confirmed';
+                    break;
+                case 'pending':
+                    statusClass = 'status-pending';
+                    break;
+                case 'cancelled':
+                    statusClass = 'status-cancelled';
+                    break;
+                case 'completed':
+                    statusClass = 'status-completed';
+                    break;
+                default:
+                    statusClass = '';
+            }
+            
+            // Create card HTML
+            card.innerHTML = `
+                <div class="card-header">
+                    <div>
+                        <h3>Booking ID: ${booking.id}</h3>
+                        <span class="booking-date">Booked on: ${bookingDate}</span>
+                    </div>
+                    <span class="status ${statusClass}">${booking.status}</span>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-building"></i> <strong>PG Name:</strong> ${booking.pgName || 'Comfort Stay PG'}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> ${booking.location || 'Bangalore'}</p>
+                    <p><i class="fas fa-bed"></i> <strong>Room Type:</strong> ${booking.roomType}</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-in:</strong> ${checkInDate}</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Check-out:</strong> ${checkOutDate}</p>
+                    <p><i class="fas fa-rupee-sign"></i> <strong>Amount:</strong> ₹${booking.amount}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="payment-info">
+                        ${getPaymentInfoHTML(booking)}
+                    </div>
+                    <div class="card-actions">
+                        ${getActionButtonsHTML(booking)}
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            setTimeout(() => {
+                const buttons = card.querySelectorAll('.card-actions button');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const action = button.textContent.trim();
+                        handleBookingAction(action, booking.id);
+                    });
+                });
+            }, 0);
+            
+            return card;
+        }
+        
+        // Get payment info HTML based on booking status
+        function getPaymentInfoHTML(booking) {
+            switch (booking.status.toLowerCase()) {
+                case 'confirmed':
+                    return `<i class="fas fa-check-circle" style="color: var(--success-color);"></i> Payment Confirmed`;
+                case 'pending':
+                    return `<i class="fas fa-clock" style="color: var(--warning-color);"></i> Payment Pending`;
+                case 'cancelled':
+                    return `<i class="fas fa-times-circle" style="color: var(--danger-color);"></i> Booking Cancelled`;
+                case 'completed':
+                    return `<i class="fas fa-check-circle" style="color: var(--success-color);"></i> Stay Completed`;
+                default:
+                    return '';
+            }
+        }
+        
+        // Get action buttons HTML based on booking status
+        function getActionButtonsHTML(booking) {
+            switch (booking.status.toLowerCase()) {
+                case 'confirmed':
+                    return `
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Extend Stay</button>
+                    `;
+                case 'pending':
+                    return `
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-danger">Cancel</button>
+                    `;
+                case 'cancelled':
+                    return `
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Book Again</button>
+                    `;
+                case 'completed':
+                    return `
+                        <button class="btn btn-outline">View Details</button>
+                        <button class="btn btn-primary">Write Review</button>
+                    `;
+                default:
+                    return `<button class="btn btn-outline">View Details</button>`;
+            }
+        }
+        
+        // Handle booking actions
+        function handleBookingAction(action, bookingId) {
+            switch (action) {
+                case 'Cancel':
+                    if (confirm(`Are you sure you want to cancel booking #${bookingId}?`)) {
+                        // Call API to cancel booking
+                        alert(`Booking #${bookingId} has been cancelled.`);
+                        loadBookings(); // Reload bookings
+                    }
+                    break;
+                case 'View Details':
+                    alert(`Viewing details for booking #${bookingId}`);
+                    break;
+                case 'Extend Stay':
+                    alert(`Extending stay for booking #${bookingId}`);
+                    break;
+                case 'Book Again':
+                    window.location.href = 'makepayment.html';
+                    break;
+                case 'Write Review':
+                    alert(`Writing review for booking #${bookingId}`);
+                    break;
+                default:
+                    alert(`Action: ${action} for Booking ID: ${bookingId}`);
+            }
+        }
+        
+        // Initialize search and filter functionality
+        function initializeSearchAndFilter() {
+            // Search functionality
+            const searchInput = document.getElementById('searchBookings');
+            const bookingCards = document.querySelectorAll('.card');
+            
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                bookingCards.forEach(card => {
+                    const cardText = card.textContent.toLowerCase();
+                    if (cardText.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Filter functionality
+            const filterCheckboxes = document.querySelectorAll('#filterMenu input[type="checkbox"]');
+            
+            function applyFilters() {
+                const selectedFilters = Array.from(filterCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+                
+                // If no filters selected, show all
+                if (selectedFilters.length === 0) {
+                    bookingCards.forEach(card => {
+                        card.style.display = 'flex';
+                    });
+                    return;
+                }
+                
+                bookingCards.forEach(card => {
+                    const status = card.getAttribute('data-status');
+                    if (selectedFilters.includes(status)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            filterCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+        }
+        
+        // Load sample bookings for demonstration
+        function loadSampleBookings() {
+            const bookingsContainer = document.querySelector('.cards-container');
+            bookingsContainer.innerHTML = '';
+            
+            const sampleBookings = [
+                {
+                    id: 'BK12345',
+                    status: 'Confirmed',
+                    bookingDate: '2023-05-15',
+                    pgName: 'Comfort Stay PG',
+                    location: 'Koramangala, Bangalore',
+                    roomType: 'Deluxe Single',
+                    checkInDate: '2023-06-01',
+                    checkOutDate: '2023-06-30',
+                    amount: '15,000'
+                },
+                {
+                    id: 'BK12346',
+                    status: 'Pending',
+                    bookingDate: '2023-05-20',
+                    pgName: 'Urban Nest PG',
+                    location: 'HSR Layout, Bangalore',
+                    roomType: 'Standard Double',
+                    checkInDate: '2023-07-01',
+                    checkOutDate: '2023-07-31',
+                    amount: '12,000'
+                },
+                {
+                    id: 'BK12347',
+                    status: 'Cancelled',
+                    bookingDate: '2023-04-10',
+                    pgName: 'Green View PG',
+                    location: 'Indiranagar, Bangalore',
+                    roomType: 'Premium Single',
+                    checkInDate: '2023-05-01',
+                    checkOutDate: '2023-05-31',
+                    amount: '18,000'
+                },
+                {
+                    id: 'BK12348',
+                    status: 'Completed',
+                    bookingDate: '2023-03-15',
+                    pgName: 'Comfort Stay PG',
+                    location: 'Koramangala, Bangalore',
+                    roomType: 'Deluxe Double',
+                    checkInDate: '2023-04-01',
+                    checkOutDate: '2023-04-30',
+                    amount: '20,000'
+                }
+            ];
+            
+            sampleBookings.forEach(booking => {
+                const bookingCard = createBookingCard(booking);
+                bookingsContainer.appendChild(bookingCard);
+            });
+            
+            // Initialize search and filter functionality
+            initializeSearchAndFilter();
+        }
+        
+        // Logout function
+        function logout() {
+            api.logout();
+        }
+    </script>
+</body>
+</html>

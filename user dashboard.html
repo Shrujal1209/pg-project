@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Paying Guest</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9fafb;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .main-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #f1f1f1;
+            padding: 0.5rem 0;
+        }
+        nav a {
+            margin: 0 1rem;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav a:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        .container {
+            padding: 2rem;
+        }
+        .card {
+            background: #f9fafb;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card h3 {
+            margin: 0 0 0.5rem;
+            color: #007BFF;
+        }
+        footer {
+            background-color: #f1f1f1;
+            color: #555;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 123, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #007BFF;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-card">
+        <header>
+            <h1>Welcome to Paying Guest Dashboard</h1>
+            <p id="welcomeMessage">Hello, User!</p>
+        </header>
+        <nav>
+            <a href="bookings.html">Bookings</a>
+            <a href="payment.html">Payments</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+        <div class="container" id="dashboardContent">
+            <div class="loading" id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <footer>
+            <p>&copy; 2023 Paying Guest. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Show loading spinner
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        
+        function showSpinner() {
+            loadingSpinner.style.display = 'flex';
+        }
+        
+        function hideSpinner() {
+            loadingSpinner.style.display = 'none';
+        }
+        
+        // Check authentication and load user data
+        document.addEventListener('DOMContentLoaded', async function() {
+            showSpinner();
+            
+            try {
+                // Check if user is authenticated
+                const token = localStorage.getItem('authToken');
+                const userRole = localStorage.getItem('userRole');
+                
+                if (!token) {
+                    // Redirect to login page if not authenticated
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Check if user has user role (not admin)
+                if (userRole === 'admin') {
+                    // Redirect to admin dashboard if admin
+                    window.location.href = 'admin dashboard.html';
+                    return;
+                }
+                
+                // Fetch user data from backend
+                try {
+                    // Use our API service
+                    const userData = await api.getUserProfile();
+                    
+                    // Update welcome message with user's name
+                    if (userData.name) {
+                        welcomeMessage.textContent = `Hello, ${userData.name}!`;
+                    }
+                    
+                    // Create dashboard cards with user data
+                    dashboardContent.innerHTML = `
+                        <div class="card" id="profile">
+                            <h3>User Profile</h3>
+                            <p>${userData.name || 'User'}</p>
+                            <p>${userData.email || 'No email provided'}</p>
+                            <p>Room: ${userData.roomNumber || 'Not assigned'}</p>
+                        </div>
+                        <div class="card" id="bookings">
+                            <h3>My Bookings</h3>
+                            <p>${userData.activeBookings || 0} active bookings</p>
+                            <p>Check your current and past bookings.</p>
+                            <a href="bookings.html">View Details</a>
+                        </div>
+                        <div class="card" id="payments">
+                            <h3>Payment History</h3>
+                            <p>Last payment: ${userData.lastPaymentDate || 'No payments yet'}</p>
+                            <p>Next due: ${userData.nextDueDate || 'No due date'}</p>
+                            <a href="payment.html">View Details</a>
+                        </div>
+                    `;
+                } catch (apiError) {
+                    console.error('API error:', apiError);
+                    
+                    // Show default dashboard if API call fails
+                    dashboardContent.innerHTML = `
+                        <div class="card" id="profile">
+                            <h3>User Profile</h3>
+                            <p>View and update your personal details.</p>
+                        </div>
+                        <div class="card" id="bookings">
+                            <h3>My Bookings</h3>
+                            <p>Check your current and past bookings.</p>
+                            <a href="bookings.html">View Details</a>
+                        </div>
+                        <div class="card" id="payments">
+                            <h3>Payment History</h3>
+                            <p>View your payment history and pending dues.</p>
+                            <a href="payment.html">View Details</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Authentication error:', error);
+                dashboardContent.innerHTML = `
+                    <div class="error-message">
+                        There was an error loading your dashboard. Please try again later.
+                    </div>
+                `;
+            } finally {
+                hideSpinner();
+            }
+        });
+        
+        // Logout function
+        function logout() {
+            // Clear authentication data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userId');
+            
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Paying Guest Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --primary-light: #8f94fb;
+            --primary-dark: #363795;
+            --secondary-color: #ff6b6b;
+            --secondary-light: #ff9e9e;
+            --secondary-dark: #c83e3e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #3498db;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --gray-color: #6c757d;
+            --body-bg: #f4f7fe;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .page-title .icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(78, 84, 200, 0.3);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            border: 1px solid #e0e0e0;
+            transition: all var(--transition-speed);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(78, 84, 200, 0.2);
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .stat-card.revenue .stat-icon {
+            background-color: var(--success-color);
+        }
+
+        .stat-card.occupancy .stat-icon {
+            background-color: var(--info-color);
+        }
+
+        .stat-card.maintenance .stat-icon {
+            background-color: var(--warning-color);
+        }
+
+        .stat-card.complaints .stat-icon {
+            background-color: var(--danger-color);
+        }
+
+        .stat-card h3 {
+            font-size: 16px;
+            color: var(--gray-color);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .stat-card .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-card .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-card .stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-card h3 {
+            font-size: 18px;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card h3 i {
+            color: var(--primary-color);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .reports-list {
+            margin-bottom: 30px;
+        }
+
+        .report-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--primary-light));
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .report-title {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .report-title h3 {
+            font-size: 20px;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .report-title p {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .report-date {
+            background-color: var(--light-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--gray-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .report-content {
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .report-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .report-tags {
+            display: flex;
+            gap: 10px;
+        }
+
+        .report-tag {
+            background-color: var(--light-color);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: var(--gray-color);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .report-action {
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color var(--transition-speed);
+        }
+
+        .report-action:hover {
+            color: var(--primary-color);
+        }
+
+        .report-action.download:hover {
+            color: var(--info-color);
+        }
+
+        .report-action.print:hover {
+            color: var(--success-color);
+        }
+
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: var(--gray-color);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 250px;
+            transition: all var(--transition-speed);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: white;
+            color: var(--gray-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .pagination-btn:hover, .pagination-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.disabled:hover {
+            background-color: white;
+            color: var(--gray-color);
+            border-color: #e0e0e0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--gray-color);
+            margin-bottom: 20px;
+        }
+
+        .empty-state button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .empty-state button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .report-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .report-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 15px;
+            border: 4px solid rgba(78, 84, 200, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Date range picker */
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: white;
+            border-radius: 6px;
+            padding: 8px 15px;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+        
+        .date-range-picker:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .date-range-picker i {
+            color: var(--primary-color);
+        }
+        
+        .date-range-picker span {
+            font-size: 14px;
+            color: var(--gray-color);
+        }
+        
+        /* Create report button */
+        .create-report-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            box-shadow: 0 4px 10px rgba(78, 84, 200, 0.2);
+        }
+        
+        .create-report-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(78, 84, 200, 0.3);
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background-color: white;
+                font-size: 12pt;
+            }
+            
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            
+            header, .filters, .pagination, .chart-container, .dashboard-stats, 
+            .report-actions, .loading, .create-report-btn, .date-range-picker {
+                display: none !important;
+            }
+            
+            .report-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+            
+            .report-card::before {
+                display: none;
+            }
+            
+            .report-footer {
+                border-top: 1px solid #ddd;
+            }
+            
+            .report-actions {
+                display: none;
+            }
+            
+            .report-date {
+                color: #333;
+                background: none;
+                padding: 0;
+            }
+            
+            h1 {
+                font-size: 18pt;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            /* Add print header */
+            .container::before {
+                content: 'Paying Guest Management System - Reports';
+                display: block;
+                text-align: center;
+                font-size: 18pt;
+                font-weight: bold;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="page-title">
+                <div class="icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h1>Reports & Analytics</h1>
+            </div>
+            <a href="admin dashboard.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </header>
+
+        <div class="dashboard-stats">
+            <div class="stat-card revenue">
+                <div class="stat-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <h3>Monthly Revenue</h3>
+                <div class="stat-value">₹1,25,000</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 12.5% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card occupancy">
+                <div class="stat-icon">
+                    <i class="fas fa-bed"></i>
+                </div>
+                <h3>Occupancy Rate</h3>
+                <div class="stat-value">85%</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 5% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card maintenance">
+                <div class="stat-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3>Maintenance Costs</h3>
+                <div class="stat-value">₹15,000</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> 8% from last month
+                </div>
+            </div>
+            
+            <div class="stat-card complaints">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h3>Complaints</h3>
+                <div class="stat-value">12</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> 25% from last month
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-bar"></i> Revenue Trends</h3>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> Occupancy Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="occupancyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 15px;">
+                <div class="date-range-picker" id="dateRangePicker">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>Last 30 Days</span>
+                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                </div>
+                
+                <button class="create-report-btn" id="createReportBtn">
+                    <i class="fas fa-plus"></i> Create New Report
+                </button>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                <div class="filter-group">
+                    <button class="filter-btn active">All Reports</button>
+                    <button class="filter-btn">Financial</button>
+                    <button class="filter-btn">Occupancy</button>
+                    <button class="filter-btn">Maintenance</button>
+                    <button class="filter-btn">Complaints</button>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search reports...">
+                </div>
+            </div>
+        </div>
+
+        <div class="reports-list">
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-title">
+                        <h3>Monthly Revenue Report</h3>
+                        <p>Summary of monthly revenue generated</p>
+                    </div>
+                    <div class="report-date">
+                        <i class="far fa-calendar-alt"></i> October 1, 2025
+                    </div>
+                </div>
+                <div class="report-content">
+                    <p>The total revenue generated for the month of September was ₹1,25,000. This includes rent payments (₹1,10,000) and additional services provided to tenants (₹15,000). There was a 12.5% increase compared to the previous month, primarily due to higher occupancy rates and the introduction of new premium rooms.</p>
+                </div>
+                <div class="report-footer">
+                    <div class="report-tags">
+                        <span class="report-tag">Financial</span>
+                        <span class="report-tag">Monthly</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="report-action download">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="report-action print">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="report-action">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-title">
+                        <h3>Occupancy Report</h3>
+                        <p>Details of room occupancy and vacancy</p>
+                    </div>
+                    <div class="report-date">
+                        <i class="far fa-calendar-alt"></i> August 5, 2025
+                    </div>
+                </div>
+                <div class="report-content">
+                    <p>The occupancy rate for the month was 85%. Out of 50 rooms, 43 were occupied, with 7 rooms vacant. The highest demand was for single rooms (95% occupancy), followed by double rooms (80% occupancy). The average length of stay was 4.5 months, with 8 new check-ins and 3 check-outs during the month.</p>
+                </div>
+                <div class="report-footer">
+                    <div class="report-tags">
+                        <span class="report-tag">Occupancy</span>
+                        <span class="report-tag">Monthly</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="report-action download">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="report-action print">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="report-action">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-title">
+                        <h3>Maintenance Report</h3>
+                        <p>Overview of maintenance activities and costs</p>
+                    </div>
+                    <div class="report-date">
+                        <i class="far fa-calendar-alt"></i> May 10, 2025
+                    </div>
+                </div>
+                <div class="report-content">
+                    <p>Maintenance activities included plumbing repairs in 5 rooms (₹5,000), electrical fixes in 3 rooms (₹3,500), and repainting of common areas (₹6,500). The total maintenance cost was ₹15,000, which is 8% lower than the previous month. Regular preventive maintenance has helped reduce emergency repair costs by 15% over the past quarter.</p>
+                </div>
+                <div class="report-footer">
+                    <div class="report-tags">
+                        <span class="report-tag">Maintenance</span>
+                        <span class="report-tag">Quarterly</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="report-action download">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="report-action print">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="report-action">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div class="report-header">
+                    <div class="report-title">
+                        <h3>Tenant Satisfaction Survey</h3>
+                        <p>Results from the quarterly tenant satisfaction survey</p>
+                    </div>
+                    <div class="report-date">
+                        <i class="far fa-calendar-alt"></i> July 15, 2025
+                    </div>
+                </div>
+                <div class="report-content">
+                    <p>The quarterly tenant satisfaction survey received responses from 38 out of 43 tenants (88% participation). Overall satisfaction rating was 4.2/5, with highest scores for cleanliness (4.5/5) and security (4.4/5). Areas for improvement include internet speed (3.6/5) and common area facilities (3.8/5). 85% of tenants indicated they would recommend our PG to others.</p>
+                </div>
+                <div class="report-footer">
+                    <div class="report-tags">
+                        <span class="report-tag">Feedback</span>
+                        <span class="report-tag">Quarterly</span>
+                    </div>
+                    <div class="report-actions">
+                        <button class="report-action download">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="report-action print">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <button class="report-action">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button class="pagination-btn disabled">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">3</button>
+            <button class="pagination-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Loading state (hidden by default) -->
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Loading reports...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: [95000, 98000, 102000, 105000, 100000, 110000, 115000, 112000, 125000, 0, 0, 0],
+                        backgroundColor: 'rgba(78, 84, 200, 0.1)',
+                        borderColor: 'rgba(78, 84, 200, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: 'rgba(78, 84, 200, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(78, 84, 200, 0.3)',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return '₹' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Occupancy Chart
+            const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+            const occupancyChart = new Chart(occupancyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Single Rooms', 'Double Rooms', 'Triple Rooms', 'Vacant'],
+                    datasets: [{
+                        data: [45, 30, 10, 15],
+                        backgroundColor: [
+                            'rgba(78, 84, 200, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(231, 76, 60, 0.8)'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                boxWidth: 12,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(78, 84, 200, 0.3)',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%',
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show loading indicator
+                    document.getElementById('loadingIndicator').style.display = 'block';
+                    document.querySelector('.reports-list').style.display = 'none';
+                    
+                    // Simulate loading
+                    setTimeout(() => {
+                        document.getElementById('loadingIndicator').style.display = 'none';
+                        document.querySelector('.reports-list').style.display = 'block';
+                        
+                        // In a real application, you would filter the reports here
+                    }, 800);
+                });
+            });
+
+            // Pagination
+            const paginationButtons = document.querySelectorAll('.pagination-btn:not(.disabled)');
+            paginationButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.classList.contains('disabled')) return;
+                    
+                    // Remove active class from all buttons
+                    paginationButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show loading indicator
+                    document.getElementById('loadingIndicator').style.display = 'block';
+                    document.querySelector('.reports-list').style.display = 'none';
+                    
+                    // Simulate loading
+                    setTimeout(() => {
+                        document.getElementById('loadingIndicator').style.display = 'none';
+                        document.querySelector('.reports-list').style.display = 'block';
+                        
+                        // In a real application, you would load the next page of reports here
+                    }, 800);
+                });
+            });
+
+            // Report actions
+            const reportActions = document.querySelectorAll('.report-action');
+            reportActions.forEach(action => {
+                action.addEventListener('click', function() {
+                    const actionType = this.classList.contains('download') ? 'download' : 
+                                      this.classList.contains('print') ? 'print' : 'share';
+                    
+                    if (actionType === 'print') {
+                        window.print();
+                    } else if (actionType === 'download') {
+                        alert('Report downloaded successfully!');
+                    } else if (actionType === 'share') {
+                        alert('Share options would appear here in a real application.');
+                    }
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const reportCards = document.querySelectorAll('.report-card');
+                
+                reportCards.forEach(card => {
+                    const title = card.querySelector('.report-title h3').textContent.toLowerCase();
+                    const content = card.querySelector('.report-content').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #2c3e50;
+            padding-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .sidebar a i {
+            margin-right: 10px;
+        }
+        .sidebar a:hover {
+            background-color: #34495e;
+            transform: translateX(10px);
+        }
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .card-header {
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .card-body p {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+        }
+        .notification-icon {
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+        .notification-icon i {
+            font-size: 1.2rem;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: -10px;
+            width: 320px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .notification-dropdown:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .notification-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #333;
+        }
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: #007bff;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .dropdown-notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .dropdown-notification-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.3s;
+        }
+        .dropdown-notification-item:hover {
+            background-color: #f8f9fa;
+        }
+        .dropdown-notification-item.unread {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        .notification-footer {
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        .notification-footer a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .user-dropdown:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+        }
+        .user-dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .user-dropdown ul li {
+            padding: 0;
+        }
+        .user-dropdown ul li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .user-dropdown ul li a:hover {
+            background-color: #f8f9fa;
+        }
+        .user-dropdown ul li a i {
+            margin-right: 10px;
+            color: #007bff;
+            width: 20px;
+            text-align: center;
+        }
+        .user-dropdown ul li.divider {
+            height: 1px;
+            background-color: #e9ecef;
+            margin: 5px 0;
+        }
+        .show-dropdown {
+            display: block;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+        .sidebar-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .sidebar-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .sidebar-menu a.active {
+            background-color: #1e2f3e;
+            border-left: 4px solid #007bff;
+        }
+        .footer {
+            margin-top: 40px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+        }
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        .footer-section h4 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .footer-section p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #e9ecef;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+        .footer-section ul li a {
+            color: #e9ecef;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+        .footer-section ul li a:hover {
+            color: #007bff;
+        }
+        .footer-section i {
+            margin-right: 10px;
+            color: #007bff;
+        }
+        .footer-bottom {
+            background-color: #1a2530;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+        }
+        .footer-bottom p {
+            margin: 0;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .col-md-6 {
+            flex: 1 1 calc(50% - 20px);
+            min-width: 300px;
+        }
+        .card-header.bg-primary {
+            background-color: #007bff;
+        }
+        .card-header.bg-success {
+            background-color: #28a745;
+        }
+        .card-header.bg-warning {
+            background-color: #ffc107;
+        }
+        .card-header.bg-danger {
+            background-color: #dc3545;
+        }
+        .card-header.bg-info {
+            background-color: #17a2b8;
+        }
+        .sidebar-toggle {
+            display: none;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .action-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .action-btn i {
+            margin-right: 5px;
+        }
+        .action-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        /* Section Titles */
+        .section-title {
+            margin: 30px 0 15px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+        }
+        
+        /* Stats Cards */
+        .dashboard-stats .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .dashboard-stats .col-md-3 {
+            flex: 1 1 calc(25% - 15px);
+            min-width: 200px;
+        }
+        .stat-card {
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .stat-change.positive {
+            color: #28a745;
+        }
+        .stat-change.negative {
+            color: #dc3545;
+        }
+        
+        /* Header with Actions */
+        .header-with-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-with-actions h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .card-actions {
+            display: flex;
+            align-items: center;
+        }
+        .time-filter {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .time-filter option {
+            background-color: white;
+            color: #333;
+        }
+        .view-all {
+            color: white;
+            text-decoration: none;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .view-all:hover {
+            opacity: 1;
+        }
+        
+        /* Chart Placeholders */
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chart-placeholder {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 180px;
+        }
+        .chart-bar {
+            width: 30px;
+            background-color: #007bff;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s;
+        }
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+        .chart-labels span {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        /* Pie Chart Placeholder */
+        .pie-chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .pie-chart {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+        .pie-segment {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: rotate(0deg);
+            transform-origin: 50% 50%;
+            background-color: var(--color);
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);
+            clip-path: polygon(50% 50%, 50% 0%, calc(50% + 50% * cos(calc(var(--percentage) * 3.6deg))) calc(50% - 50% * sin(calc(var(--percentage) * 3.6deg))), 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);
+        }
+        .pie-legend {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        /* Activity List */
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .activity-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            color: white;
+        }
+        .activity-content {
+            flex: 1;
+        }
+        .activity-text {
+            margin: 0 0 5px;
+            font-size: 0.9rem;
+        }
+        .activity-time {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .bg-success {
+            background-color: #28a745;
+        }
+        .bg-danger {
+            background-color: #dc3545;
+        }
+        .bg-warning {
+            background-color: #ffc107;
+        }
+        .bg-info {
+            background-color: #17a2b8;
+        }
+        
+        /* Notification List */
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .notification-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item.unread {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            color: white;
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-text {
+            margin: 0 0 5px;
+            font-size: 0.9rem;
+        }
+        .notification-time {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .notification-actions {
+            margin-left: 10px;
+        }
+        .btn-mark-read {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .btn-mark-read:hover {
+            color: #007bff;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .dashboard-stats .col-md-3 {
+                flex: 1 1 calc(50% - 15px);
+            }
+            .col-md-8, .col-md-4, .col-md-6 {
+                flex: 1 1 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .sidebar-toggle {
+                display: block;
+                position: relative;
+                background: none;
+                color: white;
+                border: none;
+                padding: 10px;
+                font-size: 1.2rem;
+                cursor: pointer;
+                z-index: 1001;
+                margin-right: 10px;
+            }
+            .navbar-right {
+                display: none;
+            }
+            .quick-actions {
+                flex-direction: column;
+            }
+            .action-btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-stats .col-md-3 {
+                flex: 1 1 100%;
+            }
+            .card-header h3 {
+                font-size: 1rem;
+            }
+            .time-filter, .view-all {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <h1>PG Management System</h1>
+    <div class="navbar-right">
+        <div class="notification-icon" id="notificationIcon">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+            <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-header">
+                    <h3>Notifications</h3>
+                    <button class="mark-all-read">Mark all as read</button>
+                </div>
+                <ul class="dropdown-notification-list">
+                    <li class="dropdown-notification-item unread">
+                        <div class="notification-icon bg-danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p class="notification-text">3 tenants have pending payments</p>
+                            <p class="notification-time">2 hours ago</p>
+                        </div>
+                    </li>
+                    <li class="dropdown-notification-item unread">
+                        <div class="notification-icon bg-success">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p class="notification-text">5 new tenant applications</p>
+                            <p class="notification-time">5 hours ago</p>
+                        </div>
+                    </li>
+                    <li class="dropdown-notification-item">
+                        <div class="notification-icon bg-info">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p class="notification-text">Maintenance request for Room 201</p>
+                            <p class="notification-time">Yesterday</p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="notification-footer">
+                    <a href="#">View all notifications</a>
+                </div>
+            </div>
+        </div>
+        <div class="user-profile" id="userProfile">
+            <img src="https://via.placeholder.com/40" alt="Admin" class="avatar">
+            <div class="user-info">
+                <span class="user-name">Admin User</span>
+                <span class="user-role">Administrator</span>
+            </div>
+            <div class="user-dropdown" id="userDropdown">
+                <ul>
+                   
+                    <li class="divider"></li>
+                    <li><a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="https://via.placeholder.com/50" alt="Logo">
+        <h3>Admin Panel</h3>
+    </div>
+    <div class="sidebar-menu">
+        <a href="admin dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="manage tenants.html"><i class="fas fa-users"></i> Manage Tenants</a>
+        <a href="manage rooms.html"><i class="fas fa-door-open"></i> Manage Rooms</a>
+        
+        <a href="rts.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <a href="settings.html"><i class="fas fa-cogs"></i> Settings</a>
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container">
+        <div class="welcome-section">
+            <div class="card">
+                <div class="card-header bg-primary">
+                    <h2>Welcome to the Admin Dashboard</h2>
+                </div>
+                <div class="card-body">
+                    <p>Manage your Paying Guest Management System efficiently and effectively.</p>
+                    <div class="quick-actions">
+                        <button class="action-btn"><i class="fas fa-plus"></i> Add New Tenant</button>
+                        <button class="action-btn"><i class="fas fa-plus"></i> Add New Room</button>
+                        <button class="action-btn"><i class="fas fa-file-invoice-dollar"></i> Record Payment</button>
+                        <button class="action-btn"><i class="fas fa-file-export"></i> Export Reports</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-stats">
+            <h3 class="section-title">Dashboard Statistics</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-header bg-primary">
+                            <i class="fas fa-user-friends"></i> Total Tenants
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">50</p>
+                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 5% from last month</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-header bg-success">
+                            <i class="fas fa-bed"></i> Available Rooms
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">10</p>
+                            <p class="stat-change negative"><i class="fas fa-arrow-down"></i> 2% from last month</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-header bg-warning">
+                            <i class="fas fa-exclamation-circle"></i> Pending Payments
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">$2,000</p>
+                            <p class="stat-change negative"><i class="fas fa-arrow-up"></i> 8% from last month</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-header bg-danger">
+                            <i class="fas fa-dollar-sign"></i> Monthly Revenue
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">$5,000</p>
+                            <p class="stat-change positive"><i class="fas fa-arrow-up"></i> 12% from last month</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <div class="header-with-actions">
+                            <h3><i class="fas fa-chart-line"></i> Revenue Overview</h3>
+                            <div class="card-actions">
+                                <select class="time-filter">
+                                    <option>Last 7 Days</option>
+                                    <option>Last 30 Days</option>
+                                    <option selected>Last 3 Months</option>
+                                    <option>Last Year</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <!-- Placeholder for chart -->
+                            <div class="chart-placeholder">
+                                <div class="chart-bars">
+                                    <div class="chart-bar" style="height: 60%;"></div>
+                                    <div class="chart-bar" style="height: 40%;"></div>
+                                    <div class="chart-bar" style="height: 70%;"></div>
+                                    <div class="chart-bar" style="height: 50%;"></div>
+                                    <div class="chart-bar" style="height: 80%;"></div>
+                                    <div class="chart-bar" style="height: 75%;"></div>
+                                </div>
+                                <div class="chart-labels">
+                                    <span>Jan</span>
+                                    <span>Feb</span>
+                                    <span>Mar</span>
+                                    <span>Apr</span>
+                                    <span>May</span>
+                                    <span>Jun</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success">
+                        <h3><i class="fas fa-tasks"></i> Room Occupancy</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <!-- Placeholder for pie chart -->
+                            <div class="pie-chart-placeholder">
+                                <div class="pie-chart">
+                                    <div class="pie-segment" style="--percentage: 75%; --color: #28a745;"></div>
+                                </div>
+                                <div class="pie-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #28a745;"></span>
+                                        <span>Occupied (75%)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #e9ecef;"></span>
+                                        <span>Available (25%)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <div class="header-with-actions">
+                            <h3><i class="fas fa-history"></i> Recent Activities</h3>
+                            <div class="card-actions">
+                                <a href="#" class="view-all">View All</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon bg-success">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">New tenant <strong>John Doe</strong> added to Room 102</p>
+                                    <p class="activity-time">Today, 10:30 AM</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon bg-danger">
+                                    <i class="fas fa-user-minus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">Tenant <strong>Sarah Smith</strong> checked out from Room 205</p>
+                                    <p class="activity-time">Yesterday, 3:15 PM</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon bg-warning">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">Payment of <strong>$500</strong> received from <strong>Mike Johnson</strong></p>
+                                    <p class="activity-time">Yesterday, 11:45 AM</p>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon bg-info">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">Maintenance request for Room 304 completed</p>
+                                    <p class="activity-time">2 days ago</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <div class="header-with-actions">
+                            <h3><i class="fas fa-bell"></i> Notifications</h3>
+                            <div class="card-actions">
+                                <a href="#" class="view-all">View All</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="notification-list">
+                            <li class="notification-item unread">
+                                <div class="notification-icon bg-danger">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-text">3 tenants have pending payments for this month</p>
+                                    <p class="notification-time">2 hours ago</p>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="btn-mark-read"><i class="fas fa-check"></i></button>
+                                </div>
+                            </li>
+                            <li class="notification-item unread">
+                                <div class="notification-icon bg-success">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-text">5 new tenant applications received</p>
+                                    <p class="notification-time">5 hours ago</p>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="btn-mark-read"><i class="fas fa-check"></i></button>
+                                </div>
+                            </li>
+                            <li class="notification-item">
+                                <div class="notification-icon bg-info">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-text">Maintenance request for Room 201 needs attention</p>
+                                    <p class="notification-time">Yesterday</p>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="btn-mark-read"><i class="fas fa-check"></i></button>
+                                </div>
+                            </li>
+                            <li class="notification-item">
+                                <div class="notification-icon bg-primary">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <p class="notification-text">Room 105 will be available from next week</p>
+                                    <p class="notification-time">2 days ago</p>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="btn-mark-read"><i class="fas fa-check"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>PG Management System</h4>
+            <p>Efficient management solution for paying guest accommodations.</p>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="admin dashboard.html">Dashboard</a></li>
+                <li><a href="manage tenants.html">Tenants</a></li>
+                <li><a href="manage rooms.html">Rooms</a></li>
+                <li><a href="payment.html">Payments</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <p><i class="fas fa-envelope"></i> admin@pgmanagement.com</p>
+            <p><i class="fas fa-phone"></i> +91 9876543210</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 PG Management System. All rights reserved.</p>
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+    // Show loading spinner
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    
+    function showSpinner() {
+        loadingSpinner.style.display = 'flex';
+    }
+    
+    function hideSpinner() {
+        loadingSpinner.style.display = 'none';
+    }
+    
+    // Check authentication and load dashboard data
+    document.addEventListener('DOMContentLoaded', async function() {
+        showSpinner();
+        
+        try {
+            // Check if user is authenticated
+            const token = localStorage.getItem('authToken');
+            const userRole = localStorage.getItem('userRole');
+            
+            if (!token) {
+                // Redirect to login page if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Check if user has admin role
+            if (userRole !== 'admin') {
+                // Redirect to user dashboard if not admin
+                window.location.href = 'user dashboard.html';
+                return;
+            }
+            
+            // Fetch dashboard summary data from backend
+            try {
+                const dashboardResponse = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (dashboardResponse.ok) {
+                    const dashboardData = await dashboardResponse.json();
+                    
+                    // Update dashboard stats with real data
+                    if (dashboardData.stats) {
+                        if (dashboardData.stats.totalRooms) {
+                            document.getElementById('totalRooms').textContent = dashboardData.stats.totalRooms;
+                        }
+                        if (dashboardData.stats.occupiedRooms) {
+                            document.getElementById('occupiedRooms').textContent = dashboardData.stats.occupiedRooms;
+                        }
+                        if (dashboardData.stats.totalTenants) {
+                            document.getElementById('totalTenants').textContent = dashboardData.stats.totalTenants;
+                        }
+                        if (dashboardData.stats.monthlyRevenue) {
+                            document.getElementById('monthlyRevenue').textContent = '₹' + dashboardData.stats.monthlyRevenue;
+                        }
+                    }
+                    
+                    // Update notifications if available
+                    if (dashboardData.notifications && dashboardData.notifications.length > 0) {
+                        const notificationsList = document.querySelector('.notification-list');
+                        if (notificationsList) {
+                            // Clear existing notifications
+                            notificationsList.innerHTML = '';
+                            
+                            // Add new notifications from API
+                            dashboardData.notifications.forEach(notification => {
+                                const notificationItem = document.createElement('div');
+                                notificationItem.className = 'notification-item' + (notification.unread ? ' unread' : '');
+                                
+                                const timestamp = new Date(notification.timestamp).toLocaleString();
+                                
+                                notificationItem.innerHTML = `
+                                    <div class="notification-content">
+                                        <div class="notification-title">${notification.title}</div>
+                                        <div class="notification-text">${notification.message}</div>
+                                        <div class="notification-time">${timestamp}</div>
+                                    </div>
+                                    <button class="btn-mark-read">Mark as Read</button>
+                                `;
+                                
+                                notificationsList.appendChild(notificationItem);
+                            });
+                            
+                            // Update notification badge
+                            const unreadCount = dashboardData.notifications.filter(n => n.unread).length;
+                            const badge = document.querySelector('.badge');
+                            if (badge) {
+                                badge.textContent = unreadCount;
+                                badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                            }
+                            
+                            // Add event listeners to new buttons
+                            const markReadButtons = document.querySelectorAll('.btn-mark-read');
+                            markReadButtons.forEach(button => {
+                                button.addEventListener('click', function() {
+                                    const notificationItem = this.closest('.notification-item');
+                                    notificationItem.classList.remove('unread');
+                                    
+                                    // Update notification count
+                                    const badge = document.querySelector('.badge');
+                                    let count = parseInt(badge.textContent);
+                                    if (count > 0) {
+                                        badge.textContent = count - 1;
+                                    }
+                                    
+                                    if (count - 1 <= 0) {
+                                        badge.style.display = 'none';
+                                    }
+                                });
+                            });
+                        }
+                    }
+                }
+            } catch (apiError) {
+                console.error('Error fetching dashboard data:', apiError);
+                // Continue with the page even if API call fails
+            }
+        } catch (error) {
+            console.error('Authentication error:', error);
+        } finally {
+            hideSpinner();
+        }
+    });
+    
+    // Toggle sidebar
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('.content');
+        
+        if (sidebar.style.width === '0px' || sidebar.style.width === '') {
+            sidebar.style.width = '250px';
+            if (window.innerWidth > 768) {
+                content.style.marginLeft = '260px';
+            }
+        } else {
+            sidebar.style.width = '0px';
+            content.style.marginLeft = '0px';
+        }
+    }
+    
+    // Notification dropdown toggle
+    const notificationIcon = document.getElementById('notificationIcon');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    
+    notificationIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('show-dropdown');
+        userDropdown.classList.remove('show-dropdown');
+    });
+    
+    // User dropdown toggle
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    userProfile.addEventListener('click', function(e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show-dropdown');
+        notificationDropdown.classList.remove('show-dropdown');
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        notificationDropdown.classList.remove('show-dropdown');
+        userDropdown.classList.remove('show-dropdown');
+    });
+    
+    // Mark all notifications as read
+    const markAllReadBtn = document.querySelector('.mark-all-read');
+    markAllReadBtn.addEventListener('click', async function() {
+        const unreadItems = document.querySelectorAll('.dropdown-notification-item.unread');
+        unreadItems.forEach(item => {
+            item.classList.remove('unread');
+        });
+        
+        // Update badge
+        const badge = document.querySelector('.badge');
+        badge.style.display = 'none';
+        badge.textContent = '0';
+        
+        // Send request to mark all notifications as read
+        try {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                await fetch(`${API_BASE_URL}/notifications/mark-all-read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error marking notifications as read:', error);
+        }
+    });
+    
+    // Notification handling in the main list
+    const markReadButtons = document.querySelectorAll('.btn-mark-read');
+    markReadButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationItem = this.closest('.notification-item');
+            notificationItem.classList.remove('unread');
+            
+            // Update notification count
+            const badge = document.querySelector('.badge');
+            let count = parseInt(badge.textContent);
+            if (count > 0) {
+                badge.textContent = count - 1;
+            }
+            
+            if (count - 1 <= 0) {
+                badge.style.display = 'none';
+            }
+        });
+    });
+    
+    // Responsive handling
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('.content');
+        
+        if (window.innerWidth <= 768) {
+            sidebar.style.width = '0px';
+            content.style.marginLeft = '0px';
+        } else {
+            sidebar.style.width = '250px';
+            content.style.marginLeft = '260px';
+        }
+    });
+    
+    // Initialize charts (placeholder functionality)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate chart bars on load
+        const chartBars = document.querySelectorAll('.chart-bar');
+        chartBars.forEach(bar => {
+            const originalHeight = bar.style.height;
+            bar.style.height = '0';
+            setTimeout(() => {
+                bar.style.height = originalHeight;
+            }, 1000); // Delay to match spinner timing
+        });
+        
+        // Handle action buttons
+        const actionButtons = document.querySelectorAll('.action-btn');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                showSpinner();
+                setTimeout(hideSpinner, 800);
+            });
+        });
+    });
+    
+    // Logout function
+    function logout() {
+        // Clear authentication data
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
+        
+        // Redirect to login page
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html></div>

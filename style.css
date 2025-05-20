@@ -1,0 +1,42 @@
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    background: url('pg-background.jpg') no-repeat center center/cover;
+    color: rgb(163, 130, 130);
+    text-align: center;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 50px;
+    border-radius: 10px;
+}
+
+.home-title {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.home-description {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.home-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    color: rgb(103, 245, 9);
+    background-color: #007bff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.home-btn:hover {
+    background-color: #0056b3;
+}
